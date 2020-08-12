@@ -15,7 +15,8 @@ import StateManager from './StateManager';
 export default function createSocketMiddleware(stateManager: StateManager) {
   return (store: any) => (next: any) => (action: SocketAction) => {
     let res;
-    let module, event;
+    let module;
+    let event;
     if (!(action.meta === SOCKET_COMMAND)) {
       return next(action);
     } else {
@@ -26,16 +27,16 @@ export default function createSocketMiddleware(stateManager: StateManager) {
             store.dispatch({
               type: SOCKET_CONNECTED,
               meta: SOCKET_COMMAND,
-              socketDesc: socketDesc,
+              socketDesc,
             });
           });
           stateManager.onClose((socketDesc: string, wasClean: boolean) => {
-            console.log('closing ', socketDesc, wasClean);
+            // console.log('closing ', socketDesc, wasClean);
             store.dispatch({
               type: SOCKET_CLOSED,
               meta: SOCKET_COMMAND,
-              socketDesc: socketDesc,
-              wasClean: wasClean,
+              socketDesc,
+              wasClean,
             });
           });
           stateManager.onMessage((socketDesc: string, message: string) => {
@@ -43,14 +44,14 @@ export default function createSocketMiddleware(stateManager: StateManager) {
               type: SOCKET_RECEIVE,
               payload: message,
               meta: SOCKET_COMMAND,
-              socketDesc: socketDesc,
+              socketDesc,
             });
           });
           stateManager.onReconnect((socketDesc: string) => {
             store.dispatch({
               type: SOCKET_RECONNECT,
               meta: SOCKET_COMMAND,
-              socketDesc: socketDesc,
+              socketDesc,
             });
           });
           stateManager.connectToSocket(
@@ -60,20 +61,20 @@ export default function createSocketMiddleware(stateManager: StateManager) {
           );
           break;
         case SOCKET_DISCONNECT:
-          console.log('disconecting ');
+          // console.log('disconecting ');
           stateManager.disconnectFromSocket(action.socketDesc);
           break;
         case SOCKET_RECEIVE:
-          [module, event] = action.payload['type'].split('.');
+          [module, event] = action.payload.type.split('.');
           if (
             stateManager.events.hasOwnProperty(module) &&
             stateManager.events[module].events.hasOwnProperty(event)
           ) {
             store.dispatch(
-              stateManager.events[module].events[event](action.payload['data'])
+              stateManager.events[module].events[event](action.payload.data)
             );
           } else {
-            console.warn({ module, event }, 'does not exist');
+            // console.warn({ module, event }, 'does not exist');
           }
           break;
         case SOCKET_RECONNECT:

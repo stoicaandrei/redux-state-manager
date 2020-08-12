@@ -5,9 +5,8 @@ type apiParams<Payload> = {
   path: string;
   endpoint: string;
   method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
-  data?: Payload;
+  data?: Payload & { session_id: string };
   token?: string;
-  session_id?: string;
   apiUrl: string;
 };
 
@@ -16,13 +15,9 @@ export default async function apiCaller<Payload>({
   method = 'GET',
   data,
   token,
-  session_id,
   endpoint,
   apiUrl,
-}: apiParams<Payload>): Promise<any> {
-  // session_id is required for the session specific requests
-  if (session_id) data = { ...data, session_id: session_id } as any;
-
+}: apiParams<Payload>) {
   const query = '?' + queryString.stringify((data as any) || {});
 
   let url = `${apiUrl}/${endpoint}${path}`;
@@ -30,9 +25,9 @@ export default async function apiCaller<Payload>({
 
   if (method === 'GET') url += query;
 
-  const urlParams = path.split('/').filter(s => s[0] === ':');
+  const urlParams = path.split('/').filter((s) => s[0] === ':');
 
-  urlParams.forEach(param => {
+  urlParams.forEach((param) => {
     const key = param.slice(1);
     url = url.replace(param, (data as any)[key]);
     (data as any)[key] = undefined;

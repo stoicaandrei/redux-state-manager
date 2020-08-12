@@ -53,10 +53,18 @@ export default class StateManager {
     this.logging = true;
 
     // Callbacks
-    this.handleMessage = (a) => console.log(a);
-    this.handleOpen = (a) => console.log(a);
-    this.handleClose = (a) => console.log(a);
-    this.handleReconnect = (a) => console.log(a);
+    this.handleMessage = () => {
+      /*empty*/
+    };
+    this.handleOpen = () => {
+      /*empty*/
+    };
+    this.handleClose = () => {
+      /*empty*/
+    };
+    this.handleReconnect = () => {
+      /*empty*/
+    };
 
     this.socketEvents = {};
 
@@ -87,7 +95,7 @@ export default class StateManager {
 
     socket.onclose = (event) => {
       clearInterval(this.pingInterval as NodeJS.Timeout);
-      console.log(this.sockets);
+      // console.log(this.sockets);
       // attempt to reconnect if socket connection is dropped
 
       if (!event.wasClean) {
@@ -110,12 +118,12 @@ export default class StateManager {
   };
 
   private _log = (event: any, socketDesc: string) => {
-    this.logging &&
-      console.log({
-        event,
-        state: this.getState(socketDesc),
-        socketObj: this.sockets,
-      });
+    // this.logging &&
+    //   console.log({
+    //     event,
+    //     state: this.getState(socketDesc),
+    //     socketObj: this.sockets,
+    //   });
   };
 
   public getState = (socketDesc: string) => SOCKET_STATES[this.sockets[socketDesc].socket.readyState];
@@ -130,7 +138,7 @@ export default class StateManager {
   };
 
   public disconnectFromSocket = (socketDesc: string) => {
-    console.log(this.sockets);
+    // console.log(this.sockets);
     this.sockets[socketDesc].socket.close();
   };
 
@@ -195,27 +203,26 @@ export default class StateManager {
         try {
           // fetch auth
           const token = yield select((state) => state.auth.item.token);
-          const session_id = yield select((state) => state.session.item?.session?.id);
+          const sessionId = yield select((state) => state.session.item?.session?.id);
           // call api
           const { result, status } = yield call(() =>
             apiCaller<Payload>({
               endpoint: module,
               ...api,
-              data: action.payload,
+              data: { ...action.payload, session_id: sessionId },
               token,
-              session_id,
               apiUrl: self.apiUrl,
             }),
           );
 
           if (status.toString()[0] !== '2') {
-            console.log(result);
+            // console.log(result);
             return yield put(asyncAction.failed({ params: action.payload, error: result }));
           }
 
           yield put(asyncAction.done({ params: action.payload, result }));
         } catch (error) {
-          console.log(error);
+          // console.log(error);
           yield put(asyncAction.failed({ params: action.payload, error }));
         }
       }),

@@ -1,11 +1,11 @@
-type options = {
+type Options = {
   id?: boolean;
 };
 
 export function createSocketConnectAction(
   uri: string,
   socketDesc: string,
-  options: options = {}
+  options: Options = {}
 ) {
   return (token: string, sessionId?: string) => ({
     type: 'SOCKET_CONNECT',
@@ -19,7 +19,7 @@ export function createSocketConnectAction(
 export function createSocketDisconnectAction(
   uri: string,
   socketDesc: string,
-  options: options = {}
+  options: Options = {}
 ) {
   return (token: string, sessionId?: string) => ({
     type: 'SOCKET_DISCONNECT',
