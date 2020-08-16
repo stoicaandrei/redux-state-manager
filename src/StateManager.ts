@@ -11,7 +11,7 @@ import { PING_INTERVAL, PONG_TIMEOUT, PING, PONG, SOCKET_STATES, SOCKET_OPENED }
 
 type ConstructorProps<State> = {
   socketUrl?: string;
-  apiUrl: string;
+  apiUrl?: string;
   selectors?: { varName: string; selector: (state: State) => any }[];
   tokenSelector?: (state: State) => any;
 };
