@@ -157,7 +157,7 @@ const stateModule = 'pets';
 stateManager.createModule(stateModule, { initialState: {} })
 ```
 
-### Creating APIS
+### Creating APIs
 
 This is done via the `createApi<Payload, Result, State>(module: string, actionName: string, api: API)` method
 
