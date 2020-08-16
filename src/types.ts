@@ -35,4 +35,5 @@ export type SocketAction = {
 export type CreateModuleOptions = {
   initialState?: Record<string, unknown>;
   single?: boolean;
+  selectors?: { varName: string; selector: (arg0: any) => any }[];
 };

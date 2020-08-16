@@ -5,7 +5,7 @@ type apiParams<Payload> = {
   path: string;
   endpoint: string;
   method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
-  data?: Payload & { session_id: string };
+  data?: Payload;
   token?: string;
   apiUrl: string;
 };

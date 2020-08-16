@@ -12,7 +12,7 @@ import {
 import { SocketAction } from './types';
 import StateManager from './StateManager';
 
-export default function createSocketMiddleware(stateManager: StateManager) {
+export default function createSocketMiddleware(stateManager: StateManager<any>) {
   return (store: any) => (next: any) => (action: SocketAction) => {
     let res;
     let module;

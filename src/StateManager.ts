@@ -9,12 +9,14 @@ import apiCaller from './ApiCaller';
 
 import { PING_INTERVAL, PONG_TIMEOUT, PING, PONG, SOCKET_STATES, SOCKET_OPENED } from './constants';
 
-type ConstructorProps = {
+type ConstructorProps<State> = {
   socketUrl?: string;
   apiUrl: string;
+  selectors?: { varName: string; selector: (state: State) => any }[];
+  tokenSelector?: (state: State) => any;
 };
 
-export default class StateManager {
+export default class StateManager<StoreState> {
   readonly sockets: {
     [key: string]: {
       socket: WebSocket;
@@ -40,13 +42,20 @@ export default class StateManager {
       events: {
         [key: string]: ActionCreator<any>;
       };
+      selectors: { varName: string; selector: (state: StoreState) => any }[];
     };
   };
   private sagaEffects: ForkEffect[] = [];
   readonly socketUrl: string;
   readonly apiUrl: string;
 
-  constructor(props: ConstructorProps) {
+  private selectors: {
+    varName: string;
+    selector: (state: StoreState) => any;
+  }[];
+  private tokenSelector: (state: StoreState) => any;
+
+  constructor(props: ConstructorProps<StoreState>) {
     this.sockets = {};
     this.timeouts = {};
     this.pingInterval = null;
@@ -70,6 +79,13 @@ export default class StateManager {
 
     this.socketUrl = props.socketUrl || '';
     this.apiUrl = props.apiUrl || '';
+
+    this.selectors = props.selectors || [];
+    this.tokenSelector =
+      props.tokenSelector ||
+      (() => {
+        /*empty*/
+      });
   }
 
   private _ping = (socketDesc: string) => {
@@ -159,7 +175,7 @@ export default class StateManager {
   };
 
   // this is used to define different reducers for different apis
-  public createModule(name: string, { initialState, single }: CreateModuleOptions = {}) {
+  public createModule(name: string, { initialState, single, selectors }: CreateModuleOptions = {}) {
     if (!initialState) {
       initialState = single ? { item: {} } : { items: [] };
       initialState = { ...initialState, waiting: false };
@@ -168,6 +184,7 @@ export default class StateManager {
     this.socketEvents[name] = {
       reducer: reducerWithInitialState(initialState),
       events: {},
+      selectors: selectors ? selectors : [],
     };
   }
 
@@ -196,20 +213,32 @@ export default class StateManager {
   ): (payload: Payload) => Action<Payload> {
     const self = this;
     const asyncAction = actionCreatorFactory(module).async<Payload, Result, Error>(actionName);
+    const { reducer, selectors } = this.socketEvents[module];
 
     this.sagaEffects.push(
       // when this action is dispatched
       takeEvery(asyncAction.started, function* (action: Action<Payload>) {
+        // console.log('doing something');
         try {
           // fetch auth
-          const token = yield select((state) => state.auth.item.token);
-          const sessionId = yield select((state) => state.session.item?.session?.id);
+          const token = yield select(self.tokenSelector);
+
+          const additionalVars: { [key: string]: any } = {};
+          for (const item of self.selectors) {
+            const { varName, selector } = item;
+            additionalVars[varName] = yield select(selector);
+          }
+          for (const item of selectors) {
+            const { varName, selector } = item;
+            additionalVars[varName] = yield select(selector);
+          }
+
           // call api
           const { result, status } = yield call(() =>
             apiCaller<Payload>({
               endpoint: module,
               ...api,
-              data: { ...action.payload, session_id: sessionId },
+              data: { ...action.payload, ...additionalVars } as any,
               token,
               apiUrl: self.apiUrl,
             }),
@@ -223,12 +252,15 @@ export default class StateManager {
           yield put(asyncAction.done({ params: action.payload, result }));
         } catch (error) {
           // console.log(error);
-          yield put(asyncAction.failed({ params: action.payload, error }));
+          yield put(
+            asyncAction.failed({
+              params: action.payload,
+              error: error.toString(),
+            }),
+          );
         }
       }),
     );
-
-    const { reducer } = this.socketEvents[module];
 
     reducer.case(asyncAction.started, (state, payload) =>
       produce(state, (draft: any) => {
@@ -241,7 +273,7 @@ export default class StateManager {
     reducer.case(asyncAction.failed, (state, { params, error }) =>
       produce(state, (draft: any) => {
         draft.waiting = false;
-        draft.error = error;
+        draft.error = error.toString();
         if (api.failReducer) api.failReducer(draft, error, params as Payload);
       }),
     );
