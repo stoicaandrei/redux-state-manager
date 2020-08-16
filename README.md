@@ -2,6 +2,21 @@
 
 Easy, typescript friendly, redux store management for APIs, sockets and local events
 
+## Table of Contents
+
+* [Installation](#installation)
+* [Quick Look](#quick-look)
+* [How to setup](#how-to-setup)
+  * [File Structure](#file-structure)
+  * [State Manager Instance](#state-manager-instance)
+  * [Connect to Redux Store](#connect-to-redux-store)
+* [How to use](#how-to-use)
+  * [Creating new modules](#creating-new-modules)
+  * [Creating APIs](#creatings-apis)
+  * [Creating Sockets](#creating-sockets)
+  * [Creating Local Events](#creating-local-events)
+
+
 ## Installation
 
 ```shell
