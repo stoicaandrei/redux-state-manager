@@ -44,9 +44,12 @@ type State = {
   error?: Error;
 };
 
+type Payload = { id: number; };
+type Result = Pet;
+
 export const retrievePet = stateManager.createApi<
-  { id: number },
-  Pet,
+  Payload,
+  Result,
   State
 >(stateModule, 'RETRIEVE_PET', {
   path: '/:id',
