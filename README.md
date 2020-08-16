@@ -118,6 +118,7 @@ export function getStore() {
 }
 
 ```
+Then, in `index.tsx`, import `getStore` and pass it to the `Redux Provider`
 
 ## How to use
 
