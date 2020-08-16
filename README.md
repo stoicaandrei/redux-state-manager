@@ -88,13 +88,29 @@ src
 
 import { StateManager } from 'redux-state-manager';
 
+export type StoreState = {}; // this will help us later
+
 const API_URL = 'http://localhost:8000/api';
 const SOCKET_URL = 'ws://localhost:8000/api';
 
-export const stateManager = new StateManager({ apiUrl: API_URL, socketUrl: SOCKET_URL });
-
-export type StoreState = {}; // this will help us later
+export const stateManager = new StateManager<StoreState>({
+ // All settings are optional
+ apiUrl: API_URL, 
+ socketUrl: SOCKET_URL,
+ authSelector: state => state.auth.item.token, // tell StateManager where to find the JWT token
+ selectors: [ // use this for any other data that has to be sent at every request
+    {
+      varName: 'session_id',
+      selector: state => state.session.item.id,
+    },
+  ],
+});
 ```
+
+If the APIs require JWT authentication you need to pass `authSelector` to createModule.
+
+
+
 Then, in the other modules you will `import { stateManager } from '../root';`
 
 ### Connect to Redux Store
@@ -171,6 +187,8 @@ const stateModule = 'pets';
 
 stateManager.createModule(stateModule, { initialState: {} })
 ```
+
+You can also pass `selectors` property the same as at [State Manager Instance](#state-manager-instance) if you want data to be sent at every request, but for that specific module.
 
 ### Creating APIs
 
