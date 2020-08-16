@@ -12,7 +12,7 @@ Easy, typescript friendly, redux store management for APIs, sockets and local ev
   * [Connect to Redux Store](#connect-to-redux-store)
 * [How to use](#how-to-use)
   * [Creating new modules](#creating-new-modules)
-  * [Creating APIs](#creatings-apis)
+  * [Creating APIs](#creating-apis)
   * [Creating Sockets](#creating-sockets)
   * [Creating Local Events](#creating-local-events)
 
