@@ -1,10 +1,24 @@
 {
   "name": "redux-state-manager",
+  "description": "Easy, typescript friendly, redux store management for APIs, sockets and local events",
+
   "version": "1.0.4",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "repository": "git@github.com:stoicaandrei/redux-state-manager.git",
-  "author": "Andrei Stoica <andrei00stoica@gmail.com>",
+  "author": "Andrei Stoica <andrei00stoica@gmail.com> (https://stoica.dev)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/stoicaandrei/redux-state-manager/issues"
+  },
+  "keywords": [
+    "redux",
+    "saga",
+    "typescript",
+    "manager",
+    "API",
+    "Socket"
+  ],
   "scripts": {
     "test": "jest --config jestconfig.json",
     "build": "tsc",
