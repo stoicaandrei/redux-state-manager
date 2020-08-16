@@ -256,12 +256,12 @@ export default class StateManager {
     return (payload: Payload) => asyncAction.started(payload);
   }
 
-  public createSocketListener<Payload, Result, ApiState>(
+  public createSocketListener<Result, ApiState>(
     module: string,
     event: string,
     onReceive: (state: ApiState, result: Result) => void,
   ) {
-    const action = actionCreatorFactory(module)<Success<Payload, Result>>(event);
+    const action = actionCreatorFactory(module)<Success<unknown, Result>>(event);
     const { reducer } = this.socketEvents[module];
 
     this.socketEvents[module].events[event] = action;
