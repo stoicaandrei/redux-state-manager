@@ -1,40 +1,39 @@
 import { call, ForkEffect, put, takeEvery, select } from 'redux-saga/effects';
 import { combineReducers } from 'redux';
-import { Action, ActionCreator, Success, actionCreatorFactory } from 'typescript-fsa';
-import { ReducerBuilder, reducerWithInitialState } from 'typescript-fsa-reducers';
+import {
+  Action,
+  ActionCreator,
+  Success,
+  actionCreatorFactory,
+} from 'typescript-fsa';
+import {
+  ReducerBuilder,
+  reducerWithInitialState,
+} from 'typescript-fsa-reducers';
 import { produce } from 'immer';
 
 import { API, CreateModuleOptions } from './types';
 import apiCaller from './ApiCaller';
 
-import { PING_INTERVAL, PONG_TIMEOUT, PING, PONG, SOCKET_STATES, SOCKET_OPENED } from './constants';
+import {
+  PING_INTERVAL,
+  PONG_TIMEOUT,
+  PING,
+  PONG,
+  SOCKET_STATES,
+  SOCKET_OPENED,
+} from './constants';
 
-type ConstructorProps<State> = {
+type ConstructorProps = {
   socketUrl?: string;
   apiUrl?: string;
-  selectors?: { varName: string; selector: (state: State) => any }[];
-  tokenSelector?: (state: State) => any;
+  selectors?: { varName: string; selector: (state: any) => any }[];
+  tokenSelector?: (state: any) => any;
+  moduleName: string;
+  initialState: Record<string, unknown>;
 };
 
-export default class StateManager<StoreState> {
-  readonly sockets: {
-    [key: string]: {
-      socket: WebSocket;
-      uri: string;
-      token: string;
-    };
-  };
-  readonly timeouts: {
-    [key: string]: NodeJS.Timeout;
-  };
-  private pingInterval: NodeJS.Timeout | null;
-  readonly logging: boolean;
-
-  private handleMessage: (...args: unknown[]) => void;
-  private handleOpen: (...args: unknown[]) => void;
-  private handleClose: (...args: unknown[]) => void;
-  private handleReconnect: (...args: unknown[]) => void;
-
+export default class StateManager {
   readonly socketEvents: {
     // module
     [key: string]: {
@@ -42,7 +41,7 @@ export default class StateManager<StoreState> {
       events: {
         [key: string]: ActionCreator<any>;
       };
-      selectors: { varName: string; selector: (state: StoreState) => any }[];
+      selectors: { varName: string; selector: (state: any) => any }[];
     };
   };
   private sagaEffects: ForkEffect[] = [];
@@ -51,30 +50,13 @@ export default class StateManager<StoreState> {
 
   private selectors: {
     varName: string;
-    selector: (state: StoreState) => any;
+    selector: (state: any) => any;
   }[];
-  private tokenSelector: (state: StoreState) => any;
+  private tokenSelector: (state: any) => any;
 
-  constructor(props: ConstructorProps<StoreState>) {
-    this.sockets = {};
-    this.timeouts = {};
-    this.pingInterval = null;
-    this.logging = true;
+  private readonly moduleName: string;
 
-    // Callbacks
-    this.handleMessage = () => {
-      /*empty*/
-    };
-    this.handleOpen = () => {
-      /*empty*/
-    };
-    this.handleClose = () => {
-      /*empty*/
-    };
-    this.handleReconnect = () => {
-      /*empty*/
-    };
-
+  constructor(props: ConstructorProps) {
     this.socketEvents = {};
 
     this.socketUrl = props.socketUrl || '';
@@ -86,96 +68,16 @@ export default class StateManager<StoreState> {
       (() => {
         /*empty*/
       });
+
+    this.moduleName = props.moduleName;
+    this.createModule(this.moduleName, { initialState: props.initialState });
   }
 
-  private _ping = (socketDesc: string) => {
-    this.sockets[socketDesc].socket.send(PING);
-
-    this.timeouts[socketDesc] = setTimeout(() => {
-      this.sockets[socketDesc].socket.close(4008, 'ping_timeout');
-    }, PONG_TIMEOUT);
-  };
-
-  private _onPong = (socketDesc: string) => {
-    clearTimeout(this.timeouts[socketDesc]);
-  };
-
-  private _listen = (socketDesc: string) => {
-    const { socket } = this.sockets[socketDesc];
-
-    socket.onopen = (event) => {
-      this.pingInterval = setInterval(() => this._ping(socketDesc), PING_INTERVAL);
-      this._log(event, socketDesc);
-      this.handleOpen(socketDesc);
-    };
-
-    socket.onclose = (event) => {
-      clearInterval(this.pingInterval as NodeJS.Timeout);
-      // console.log(this.sockets);
-      // attempt to reconnect if socket connection is dropped
-
-      if (!event.wasClean) {
-        const { token, uri } = this.sockets[socketDesc];
-        setTimeout(() => this.connectToSocket(socketDesc, token, uri), 10000);
-      }
-
-      this.handleClose(socketDesc, event.wasClean);
-      this._log(event, socketDesc);
-    };
-
-    socket.onmessage = (event) => {
-      const message = event.data;
-      if (message === PONG) this._onPong(socketDesc);
-      else {
-        this.handleMessage(socketDesc, JSON.parse(event.data));
-        this._log(event, socketDesc);
-      }
-    };
-  };
-
-  private _log = (event: any, socketDesc: string) => {
-    // this.logging &&
-    //   console.log({
-    //     event,
-    //     state: this.getState(socketDesc),
-    //     socketObj: this.sockets,
-    //   });
-  };
-
-  public getState = (socketDesc: string) => SOCKET_STATES[this.sockets[socketDesc].socket.readyState];
-
-  public connectToSocket = (socketDesc: string, token: string, uri: string) => {
-    if (this.sockets[socketDesc] && SOCKET_STATES[this.sockets[socketDesc].socket.readyState] === SOCKET_OPENED) return;
-
-    const socket = new WebSocket(`${this.socketUrl}${uri}?token=${token}`);
-
-    this.sockets[socketDesc] = { token, uri, socket };
-    this._listen(socketDesc);
-  };
-
-  public disconnectFromSocket = (socketDesc: string) => {
-    // console.log(this.sockets);
-    this.sockets[socketDesc].socket.close();
-  };
-
-  public onOpen = (func: any) => {
-    this.handleOpen = func;
-  };
-
-  public onReconnect = (func: any) => {
-    this.handleReconnect = func;
-  };
-
-  public onMessage = (func: any) => {
-    this.handleMessage = func;
-  };
-
-  public onClose = (func: any) => {
-    this.handleClose = func;
-  };
-
   // this is used to define different reducers for different apis
-  public createModule(name: string, { initialState, single, selectors }: CreateModuleOptions = {}) {
+  public createModule(
+    name: string,
+    { initialState, single, selectors }: CreateModuleOptions = {}
+  ) {
     if (!initialState) {
       initialState = single ? { item: {} } : { items: [] };
       initialState = { ...initialState, waiting: false };
@@ -188,32 +90,34 @@ export default class StateManager<StoreState> {
     };
   }
 
-  public createLocalEvent<Payload, ApiState>(
-    module: string,
+  public createLocalEvent(
     actionName: string,
-    reducerFn: (state: ApiState, payload: Payload) => void,
+    reducerFn: (state: any, payload: any) => void
   ) {
-    const action = actionCreatorFactory(module)<Payload>(actionName);
+    const action = actionCreatorFactory(this.moduleName)<any>(actionName);
 
-    const { reducer } = this.socketEvents[module];
+    const { reducer } = this.socketEvents[this.moduleName];
 
     reducer.case(action, (state, payload) =>
       produce(state, (draft: any) => {
         reducerFn(draft, payload);
-      }),
+      })
     );
 
     return action;
   }
 
   public createApi<Payload, Result, ApiState>(
-    module: string,
     actionName: string,
-    api: API<Payload, Result, ApiState>,
+    api: API<Payload, Result, ApiState>
   ): (payload: Payload) => Action<Payload> {
     const self = this;
-    const asyncAction = actionCreatorFactory(module).async<Payload, Result, Error>(actionName);
-    const { reducer, selectors } = this.socketEvents[module];
+    const asyncAction = actionCreatorFactory(this.moduleName).async<
+      Payload,
+      Result,
+      Error
+    >(actionName);
+    const { reducer, selectors } = this.socketEvents[this.moduleName];
 
     this.sagaEffects.push(
       // when this action is dispatched
@@ -236,17 +140,18 @@ export default class StateManager<StoreState> {
           // call api
           const { result, status } = yield call(() =>
             apiCaller<Payload>({
-              endpoint: module,
               ...api,
               data: { ...action.payload, ...additionalVars } as any,
               token,
               apiUrl: self.apiUrl,
-            }),
+            })
           );
 
           if (status.toString()[0] !== '2') {
             // console.log(result);
-            return yield put(asyncAction.failed({ params: action.payload, error: result }));
+            return yield put(
+              asyncAction.failed({ params: action.payload, error: result })
+            );
           }
 
           yield put(asyncAction.done({ params: action.payload, result }));
@@ -256,10 +161,10 @@ export default class StateManager<StoreState> {
             asyncAction.failed({
               params: action.payload,
               error: error.toString(),
-            }),
+            })
           );
         }
-      }),
+      })
     );
 
     reducer.case(asyncAction.started, (state, payload) =>
@@ -267,7 +172,7 @@ export default class StateManager<StoreState> {
         draft.waiting = true;
         draft.error = undefined;
         if (api.startReducer) api.startReducer(draft, payload);
-      }),
+      })
     );
 
     reducer.case(asyncAction.failed, (state, { params, error }) =>
@@ -275,33 +180,34 @@ export default class StateManager<StoreState> {
         draft.waiting = false;
         draft.error = error.toString();
         if (api.failReducer) api.failReducer(draft, error, params as Payload);
-      }),
+      })
     );
 
     reducer.case(asyncAction.done, (state, { params, result }) =>
       produce(state, (draft: any) => {
         draft.waiting = false;
         api.successReducer(draft, result as Result, params as Payload);
-      }),
+      })
     );
 
     return (payload: Payload) => asyncAction.started(payload);
   }
 
   public createSocketListener<Result, ApiState>(
-    module: string,
     event: string,
-    onReceive: (state: ApiState, result: Result) => void,
+    onReceive: (state: ApiState, result: Result) => void
   ) {
-    const action = actionCreatorFactory(module)<Success<unknown, Result>>(event);
-    const { reducer } = this.socketEvents[module];
+    const action = actionCreatorFactory(this.moduleName)<
+      Success<unknown, Result>
+    >(event);
+    const { reducer } = this.socketEvents[this.moduleName];
 
-    this.socketEvents[module].events[event] = action;
+    this.socketEvents[this.moduleName].events[event] = action;
 
     reducer.case(action, (state, payload: any) =>
       produce(state, (draft: any) => {
         onReceive(draft, payload as Result);
-      }),
+      })
     );
   }
 
@@ -309,7 +215,7 @@ export default class StateManager<StoreState> {
     return this.socketEvents;
   }
 
-  get reducer() {
+  get reducers() {
     const reducers: {
       [key: string]: ReducerBuilder<any>;
     } = {};
@@ -318,13 +224,21 @@ export default class StateManager<StoreState> {
       reducers[key] = val.reducer;
     });
 
-    return combineReducers(reducers);
+    return reducers;
+  }
+
+  get reducer() {
+    return combineReducers(this.reducers);
+  }
+
+  get effects() {
+    return this.sagaEffects;
   }
 
   get saga() {
     const self = this;
     return function* () {
-      for (const effect of self.sagaEffects) {
+      for (const effect of self.effects) {
         yield effect;
       }
     };

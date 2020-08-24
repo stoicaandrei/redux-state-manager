@@ -10,9 +10,9 @@ import {
 } from './constants';
 
 import { SocketAction } from './types';
-import StateManager from './StateManager';
+import GlobalManager from './GlobalManager';
 
-export default function createSocketMiddleware(stateManager: StateManager<any>) {
+export default function createSocketMiddleware(stateManager: GlobalManager) {
   return (store: any) => (next: any) => (action: SocketAction) => {
     let res;
     let module;
@@ -54,7 +54,11 @@ export default function createSocketMiddleware(stateManager: StateManager<any>) 
               socketDesc,
             });
           });
-          stateManager.connectToSocket(action.socketDesc, action.token, action.uri);
+          stateManager.connectToSocket(
+            action.socketDesc,
+            action.token,
+            action.uri
+          );
           break;
         case SOCKET_DISCONNECT:
           // console.log('disconecting ');
@@ -62,8 +66,13 @@ export default function createSocketMiddleware(stateManager: StateManager<any>) 
           break;
         case SOCKET_RECEIVE:
           [module, event] = action.payload.type.split('.');
-          if (stateManager.events.hasOwnProperty(module) && stateManager.events[module].events.hasOwnProperty(event)) {
-            store.dispatch(stateManager.events[module].events[event](action.payload.data));
+          if (
+            stateManager.events.hasOwnProperty(module) &&
+            stateManager.events[module].events.hasOwnProperty(event)
+          ) {
+            store.dispatch(
+              stateManager.events[module].events[event](action.payload.data)
+            );
           } else {
             // console.warn({ module, event }, 'does not exist');
           }

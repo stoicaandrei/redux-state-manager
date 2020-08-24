@@ -3,24 +3,16 @@ import { select } from 'redux-saga/effects';
 
 type apiParams<Payload> = {
   path: string;
-  endpoint: string;
   method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
   data?: Payload;
   token?: string;
   apiUrl: string;
 };
 
-export default async function apiCaller<Payload>({
-  path,
-  method = 'GET',
-  data,
-  token,
-  endpoint,
-  apiUrl,
-}: apiParams<Payload>) {
+export default async function apiCaller<Payload>({ path, method = 'GET', data, token, apiUrl }: apiParams<Payload>) {
   const query = '?' + queryString.stringify((data as any) || {});
 
-  let url = `${apiUrl}/${endpoint}${path}`;
+  let url = `${apiUrl}${path}`;
   if (!url.endsWith('/')) url += '/';
 
   if (method === 'GET') url += query;

@@ -2,7 +2,6 @@ import { AsyncActionCreators } from 'typescript-fsa';
 
 export type API<Payload, Result, ApiState> = {
   path: string;
-  endpoint?: string;
   method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
   data?: Payload;
   auth?: boolean;
