@@ -4,7 +4,7 @@ import { combineReducers, Reducer } from 'redux';
 import { API, CreateModuleOptions } from './types';
 import apiCaller from './ApiCaller';
 
-import { StateManager, combineManagers } from 'services';
+import { StateManager, combineManagers } from './index';
 
 import { PING_INTERVAL, PONG_TIMEOUT, PING, PONG, SOCKET_STATES, SOCKET_OPENED } from './constants';
 
