@@ -1,28 +1,13 @@
 import { call, ForkEffect, put, takeEvery, select } from 'redux-saga/effects';
 import { combineReducers } from 'redux';
-import {
-  Action,
-  ActionCreator,
-  Success,
-  actionCreatorFactory,
-} from 'typescript-fsa';
-import {
-  ReducerBuilder,
-  reducerWithInitialState,
-} from 'typescript-fsa-reducers';
+import { Action, ActionCreator, Success, actionCreatorFactory } from 'typescript-fsa';
+import { ReducerBuilder, reducerWithInitialState } from 'typescript-fsa-reducers';
 import { produce } from 'immer';
 
 import { API, CreateModuleOptions } from './types';
 import apiCaller from './ApiCaller';
 
-import {
-  PING_INTERVAL,
-  PONG_TIMEOUT,
-  PING,
-  PONG,
-  SOCKET_STATES,
-  SOCKET_OPENED,
-} from './constants';
+import { PING_INTERVAL, PONG_TIMEOUT, PING, PONG, SOCKET_STATES, SOCKET_OPENED } from './constants';
 
 type ConstructorProps = {
   socketUrl?: string;
@@ -74,10 +59,7 @@ export default class StateManager {
   }
 
   // this is used to define different reducers for different apis
-  public createModule(
-    name: string,
-    { initialState, single, selectors }: CreateModuleOptions = {}
-  ) {
+  public createModule(name: string, { initialState, single, selectors }: CreateModuleOptions = {}) {
     if (!initialState) {
       initialState = single ? { item: {} } : { items: [] };
       initialState = { ...initialState, waiting: false };
@@ -90,10 +72,7 @@ export default class StateManager {
     };
   }
 
-  public createLocalEvent(
-    actionName: string,
-    reducerFn: (state: any, payload: any) => void
-  ) {
+  public createLocalEvent(actionName: string, reducerFn: (state: any, payload: any) => void) {
     const action = actionCreatorFactory(this.moduleName)<any>(actionName);
 
     const { reducer } = this.socketEvents[this.moduleName];
@@ -101,7 +80,7 @@ export default class StateManager {
     reducer.case(action, (state, payload) =>
       produce(state, (draft: any) => {
         reducerFn(draft, payload);
-      })
+      }),
     );
 
     return action;
@@ -109,14 +88,10 @@ export default class StateManager {
 
   public createApi<Payload, Result, ApiState>(
     actionName: string,
-    api: API<Payload, Result, ApiState>
+    api: API<Payload, Result, ApiState>,
   ): (payload: Payload) => Action<Payload> {
     const self = this;
-    const asyncAction = actionCreatorFactory(this.moduleName).async<
-      Payload,
-      Result,
-      Error
-    >(actionName);
+    const asyncAction = actionCreatorFactory(this.moduleName).async<Payload, Result, Error>(actionName);
     const { reducer, selectors } = this.socketEvents[this.moduleName];
 
     this.sagaEffects.push(
@@ -144,14 +119,12 @@ export default class StateManager {
               data: { ...action.payload, ...additionalVars } as any,
               token,
               apiUrl: self.apiUrl,
-            })
+            }),
           );
 
           if (status.toString()[0] !== '2') {
             // console.log(result);
-            return yield put(
-              asyncAction.failed({ params: action.payload, error: result })
-            );
+            return yield put(asyncAction.failed({ params: action.payload, error: result }));
           }
 
           yield put(asyncAction.done({ params: action.payload, result }));
@@ -161,10 +134,10 @@ export default class StateManager {
             asyncAction.failed({
               params: action.payload,
               error: error.toString(),
-            })
+            }),
           );
         }
-      })
+      }),
     );
 
     reducer.case(asyncAction.started, (state, payload) =>
@@ -172,7 +145,7 @@ export default class StateManager {
         draft.waiting = true;
         draft.error = undefined;
         if (api.startReducer) api.startReducer(draft, payload);
-      })
+      }),
     );
 
     reducer.case(asyncAction.failed, (state, { params, error }) =>
@@ -180,26 +153,21 @@ export default class StateManager {
         draft.waiting = false;
         draft.error = error.toString();
         if (api.failReducer) api.failReducer(draft, error, params as Payload);
-      })
+      }),
     );
 
     reducer.case(asyncAction.done, (state, { params, result }) =>
       produce(state, (draft: any) => {
         draft.waiting = false;
         api.successReducer(draft, result as Result, params as Payload);
-      })
+      }),
     );
 
     return (payload: Payload) => asyncAction.started(payload);
   }
 
-  public createSocketListener<Result, ApiState>(
-    event: string,
-    onReceive: (state: ApiState, result: Result) => void
-  ) {
-    const action = actionCreatorFactory(this.moduleName)<
-      Success<unknown, Result>
-    >(event);
+  public createSocketListener<Result, ApiState>(event: string, onReceive: (state: ApiState, result: Result) => void) {
+    const action = actionCreatorFactory(this.moduleName)<Success<unknown, Result>>(event);
     const { reducer } = this.socketEvents[this.moduleName];
 
     this.socketEvents[this.moduleName].events[event] = action;
@@ -207,7 +175,7 @@ export default class StateManager {
     reducer.case(action, (state, payload: any) =>
       produce(state, (draft: any) => {
         onReceive(draft, payload as Result);
-      })
+      }),
     );
   }
 

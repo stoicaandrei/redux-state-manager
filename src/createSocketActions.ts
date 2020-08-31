@@ -2,11 +2,7 @@ type Options = {
   id?: boolean;
 };
 
-export function createSocketConnectAction(
-  uri: string,
-  socketDesc: string,
-  options: Options = {}
-) {
+export function createSocketConnectAction(uri: string, socketDesc: string, options: Options = {}) {
   return (token: string, sessionId?: string) => ({
     type: 'SOCKET_CONNECT',
     meta: 'SOCKET_COMMAND',
@@ -16,11 +12,7 @@ export function createSocketConnectAction(
   });
 }
 
-export function createSocketDisconnectAction(
-  uri: string,
-  socketDesc: string,
-  options: Options = {}
-) {
+export function createSocketDisconnectAction(uri: string, socketDesc: string, options: Options = {}) {
   return (token: string, sessionId?: string) => ({
     type: 'SOCKET_DISCONNECT',
     meta: 'SOCKET_COMMAND',
