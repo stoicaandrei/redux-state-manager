@@ -2,6 +2,8 @@
 
 Easy, typescript friendly, redux store management for APIs, sockets and local events
 
+### <span style="color:red">Documentation needs to be updated</span>
+
 ## Table of Contents
 
 * [Installation](#installation)
