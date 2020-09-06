@@ -15,8 +15,6 @@ import GlobalManager from './GlobalManager';
 export default function createSocketMiddleware(stateManager: GlobalManager) {
   return (store: any) => (next: any) => (action: SocketAction) => {
     let res;
-    let module;
-    let event;
     if (!(action.meta === SOCKET_COMMAND)) {
       return next(action);
     } else {
@@ -54,18 +52,24 @@ export default function createSocketMiddleware(stateManager: GlobalManager) {
               socketDesc,
             });
           });
-          stateManager.connectToSocket(action.socketDesc, action.token, action.uri);
+          stateManager.connectToSocket(
+            action.socketDesc,
+            action.token,
+            action.uri
+          );
           break;
         case SOCKET_DISCONNECT:
           // console.log('disconecting ');
           stateManager.disconnectFromSocket(action.socketDesc);
           break;
         case SOCKET_RECEIVE:
-          [module, event] = action.payload.type.split('.');
-          if (stateManager.events.hasOwnProperty(module) && stateManager.events[module].events.hasOwnProperty(event)) {
-            store.dispatch(stateManager.events[module].events[event](action.payload.data));
+          const event = action.payload.type;
+          if (stateManager.socketEvents.hasOwnProperty(event)) {
+            store.dispatch(
+              stateManager.socketEvents[event](action.payload.data)
+            );
           } else {
-            // console.warn({ module, event }, 'does not exist');
+            // console.warn({ event }, 'does not exist');
           }
           break;
         case SOCKET_RECONNECT:
