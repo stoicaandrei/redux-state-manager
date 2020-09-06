@@ -2,7 +2,7 @@ import { combineReducers } from 'redux';
 
 import { StateManager } from './index';
 
-export default function combineManagers(managers: StateManager[]) {
+export default function combineManagers(managers: StateManager[]): any {
   const reducers = managers.reduce((p, c) => ({ ...p, [c.moduleName]: c.reducer }), {});
   const reducer = combineReducers(reducers);
 
