@@ -9,13 +9,7 @@ type apiParams<Payload> = {
   apiUrl: string;
 };
 
-export default async function apiCaller<Payload>({
-  path,
-  method = 'GET',
-  data,
-  token,
-  apiUrl,
-}: apiParams<Payload>) {
+export default async function apiCaller<Payload>({ path, method = 'GET', data, token, apiUrl }: apiParams<Payload>) {
   const query = '?' + queryString.stringify((data as any) || {});
 
   let url = `${apiUrl}${path}`;
@@ -23,9 +17,9 @@ export default async function apiCaller<Payload>({
 
   if (method === 'GET') url += query;
 
-  const urlParams = path.split('/').filter(s => s[0] === ':');
+  const urlParams = path.split('/').filter((s) => s[0] === ':');
 
-  urlParams.forEach(param => {
+  urlParams.forEach((param) => {
     const key = param.slice(1);
     url = url.replace(param, (data as any)[key]);
     (data as any)[key] = undefined;

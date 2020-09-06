@@ -6,14 +6,7 @@ import apiCaller from './ApiCaller';
 
 import { StateManager, combineManagers } from './index';
 
-import {
-  PING_INTERVAL,
-  PONG_TIMEOUT,
-  PING,
-  PONG,
-  SOCKET_STATES,
-  SOCKET_OPENED,
-} from './constants';
+import { PING_INTERVAL, PONG_TIMEOUT, PING, PONG, SOCKET_STATES, SOCKET_OPENED } from './constants';
 
 type ConstructorProps = {
   socketUrl?: string;
@@ -88,16 +81,13 @@ export default class GlobalManager {
   private _listen = (socketDesc: string) => {
     const { socket } = this.sockets[socketDesc];
 
-    socket.onopen = event => {
-      this.pingInterval = setInterval(
-        () => this._ping(socketDesc),
-        PING_INTERVAL
-      );
+    socket.onopen = (event) => {
+      this.pingInterval = setInterval(() => this._ping(socketDesc), PING_INTERVAL);
       this._log(event, socketDesc);
       this.handleOpen(socketDesc);
     };
 
-    socket.onclose = event => {
+    socket.onclose = (event) => {
       clearInterval(this.pingInterval as NodeJS.Timeout);
       // console.log(this.sockets);
       // attempt to reconnect if socket connection is dropped
@@ -111,7 +101,7 @@ export default class GlobalManager {
       this._log(event, socketDesc);
     };
 
-    socket.onmessage = event => {
+    socket.onmessage = (event) => {
       const message = event.data;
       if (message === PONG) this._onPong(socketDesc);
       else {
@@ -130,16 +120,10 @@ export default class GlobalManager {
     //   });
   };
 
-  public getState = (socketDesc: string) =>
-    SOCKET_STATES[this.sockets[socketDesc].socket.readyState];
+  public getState = (socketDesc: string) => SOCKET_STATES[this.sockets[socketDesc].socket.readyState];
 
   public connectToSocket = (socketDesc: string, token: string, uri: string) => {
-    if (
-      this.sockets[socketDesc] &&
-      SOCKET_STATES[this.sockets[socketDesc].socket.readyState] ===
-        SOCKET_OPENED
-    )
-      return;
+    if (this.sockets[socketDesc] && SOCKET_STATES[this.sockets[socketDesc].socket.readyState] === SOCKET_OPENED) return;
 
     const socket = new WebSocket(`${this.socketUrl}${uri}?token=${token}`);
 

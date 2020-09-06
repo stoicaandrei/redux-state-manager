@@ -52,11 +52,7 @@ export default function createSocketMiddleware(stateManager: GlobalManager) {
               socketDesc,
             });
           });
-          stateManager.connectToSocket(
-            action.socketDesc,
-            action.token,
-            action.uri
-          );
+          stateManager.connectToSocket(action.socketDesc, action.token, action.uri);
           break;
         case SOCKET_DISCONNECT:
           // console.log('disconecting ');
@@ -65,9 +61,7 @@ export default function createSocketMiddleware(stateManager: GlobalManager) {
         case SOCKET_RECEIVE:
           const event = action.payload.type;
           if (stateManager.socketEvents.hasOwnProperty(event)) {
-            store.dispatch(
-              stateManager.socketEvents[event](action.payload.data)
-            );
+            store.dispatch(stateManager.socketEvents[event](action.payload.data));
           } else {
             // console.warn({ event }, 'does not exist');
           }

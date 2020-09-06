@@ -1,16 +1,7 @@
 import { call, ForkEffect, put, takeEvery, select } from 'redux-saga/effects';
 import { combineReducers } from 'redux';
-import {
-  Action,
-  ActionCreator,
-  Success,
-  actionCreatorFactory,
-  ActionCreatorFactory,
-} from 'typescript-fsa';
-import {
-  ReducerBuilder,
-  reducerWithInitialState,
-} from 'typescript-fsa-reducers';
+import { Action, ActionCreator, Success, actionCreatorFactory, ActionCreatorFactory } from 'typescript-fsa';
+import { ReducerBuilder, reducerWithInitialState } from 'typescript-fsa-reducers';
 import { produce } from 'immer';
 
 import { API } from './types';
@@ -61,16 +52,13 @@ export default class StateManager {
     this.actionCreator = actionCreatorFactory(this.moduleName);
   }
 
-  public createLocalEvent(
-    actionName: string,
-    reducerFn: (state: any, payload: any) => void
-  ) {
+  public createLocalEvent(actionName: string, reducerFn: (state: any, payload: any) => void) {
     const action = this.actionCreator<any>(actionName);
 
     this.reducer.case(action, (state, payload) =>
       produce(state, (draft: any) => {
         reducerFn(draft, payload);
-      })
+      }),
     );
 
     return action;
@@ -78,12 +66,10 @@ export default class StateManager {
 
   public createApi<Payload, Result, ApiState>(
     actionName: string,
-    api: API<Payload, Result, ApiState>
+    api: API<Payload, Result, ApiState>,
   ): (payload: Payload) => Action<Payload> {
     const self = this;
-    const asyncAction = this.actionCreator.async<Payload, Result, Error>(
-      actionName
-    );
+    const asyncAction = this.actionCreator.async<Payload, Result, Error>(actionName);
     const { reducer, selectors } = this;
 
     this.effects.push(
@@ -111,14 +97,12 @@ export default class StateManager {
               data: { ...action.payload, ...additionalVars } as any,
               token,
               apiUrl: self.apiUrl,
-            })
+            }),
           );
 
           if (status.toString()[0] !== '2') {
             // console.log(result);
-            return yield put(
-              asyncAction.failed({ params: action.payload, error: result })
-            );
+            return yield put(asyncAction.failed({ params: action.payload, error: result }));
           }
 
           yield put(asyncAction.done({ params: action.payload, result }));
@@ -128,10 +112,10 @@ export default class StateManager {
             asyncAction.failed({
               params: action.payload,
               error: error.toString(),
-            })
+            }),
           );
         }
-      })
+      }),
     );
 
     reducer.case(asyncAction.started, (state, payload) =>
@@ -139,7 +123,7 @@ export default class StateManager {
         draft.waiting = true;
         draft.error = undefined;
         if (api.startReducer) api.startReducer(draft, payload);
-      })
+      }),
     );
 
     reducer.case(asyncAction.failed, (state, { params, error }) =>
@@ -147,30 +131,27 @@ export default class StateManager {
         draft.waiting = false;
         draft.error = error.toString();
         if (api.failReducer) api.failReducer(draft, error, params as Payload);
-      })
+      }),
     );
 
     reducer.case(asyncAction.done, (state, { params, result }) =>
       produce(state, (draft: any) => {
         draft.waiting = false;
         api.successReducer(draft, result as Result, params as Payload);
-      })
+      }),
     );
 
     return (payload: Payload) => asyncAction.started(payload);
   }
 
-  public createSocketListener<Result, ApiState>(
-    type: string,
-    onReceive: (state: ApiState, result: Result) => void
-  ) {
+  public createSocketListener<Result, ApiState>(type: string, onReceive: (state: ApiState, result: Result) => void) {
     const action = this.actionCreator<Success<unknown, Result>>(type);
     this.socketEvents[type] = action;
 
     this.reducer.case(action, (state, payload: any) =>
       produce(state, (draft: any) => {
         onReceive(draft, payload as Result);
-      })
+      }),
     );
   }
 }
