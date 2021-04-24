@@ -1,7 +1,8 @@
 import queryString from 'query-string';
-import { select } from 'redux-saga/effects';
 
-type apiParams<Payload> = {
+import type { ApiResponse } from './types';
+
+type ApiParams<Payload> = {
   path: string;
   method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
   data?: Payload;
@@ -9,7 +10,13 @@ type apiParams<Payload> = {
   apiUrl: string;
 };
 
-export default async function apiCaller<Payload>({ path, method = 'GET', data, token, apiUrl }: apiParams<Payload>) {
+export default async function apiCaller<Payload, Result>({
+  path,
+  method = 'GET',
+  data,
+  token,
+  apiUrl,
+}: ApiParams<Payload>): Promise<ApiResponse<Result>> {
   const query = '?' + queryString.stringify((data as any) || {});
 
   let url = `${apiUrl}${path}`;

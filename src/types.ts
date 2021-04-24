@@ -1,4 +1,4 @@
-import { AsyncActionCreators } from 'typescript-fsa';
+import { Action } from 'typescript-fsa';
 
 export type API<Payload, Result, ApiState> = {
   path: string;
@@ -10,29 +10,7 @@ export type API<Payload, Result, ApiState> = {
   startReducer?: (state: ApiState, payload: Payload) => void;
 };
 
-export type ApiStateList<Entity> = {
-  items: Entity[];
-  waiting: boolean;
-  error?: Error;
-};
-
-export type ApiStateSingle<Entity> = {
-  item: Entity;
-  waiting: boolean;
-  error?: Error;
-};
-
-export type SocketAction = {
-  type: string;
-  meta: string;
-  token: string;
-  uri: string;
-  socketDesc: string;
-  payload: any;
-};
-
-export type CreateModuleOptions = {
-  initialState?: Record<string, unknown>;
-  single?: boolean;
-  selectors?: { varName: string; selector: (arg0: any) => any }[];
+export type ApiResponse<Result> = {
+  result: Result | Error;
+  status: number;
 };
