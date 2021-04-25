@@ -12,14 +12,14 @@ export type ExtendedState<State> = State & {
   loading: Record<string, boolean>;
 };
 
-export type TokenSelector<State> = StringSelector<State>
-export type Selectors<State> = NamedSelector<State>[]
+export type TokenSelector<State> = StringSelector<State>;
+export type Selectors<State> = NamedSelector<State>[];
 
 export type ConstructorProps<State> = {
   apiUrl: string;
   selectors?: Selectors<State>;
   tokenSelector?: TokenSelector<State>;
-  initialState: Partial<State>;
+  initialState: Partial<ExtendedState<State>>;
 };
 
 export type ActionCaller<Payload> = (payload: Payload) => Action<Payload>;

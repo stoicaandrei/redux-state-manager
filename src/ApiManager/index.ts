@@ -25,7 +25,7 @@ export default class ApiManager<S> {
   private actionCreator: ActionCreatorFactory;
   private effects: ForkEffect[] = [];
 
-  constructor(props: ConstructorProps<ExtendedState<S>>) {
+  constructor(props: ConstructorProps<S>) {
     this.apiUrl = props.apiUrl;
     this.selectors = props.selectors || [];
     this.tokenSelector = props.tokenSelector || emptySelector;

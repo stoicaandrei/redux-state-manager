@@ -3,7 +3,8 @@ import createSagaMiddleware from 'redux-saga';
 
 import ApiManager from './ApiManager';
 
-import { ConstructorProps } from './ApiManager/types';
+import type { ConstructorProps } from './ApiManager/types';
+import type { API } from './types';
 
 export default class StateManager<State> {
   private readonly apiManager: ApiManager<State>;
