@@ -1,5 +1,4 @@
 import { Action } from 'typescript-fsa';
-import { API } from '../types';
 
 export type StringSelector<State> = (state: State) => string | undefined;
 export type NamedSelector<State> = {

@@ -1,17 +1,14 @@
-import { call, put, select, takeEvery } from 'redux-saga/effects';
 import { actionCreatorFactory } from 'typescript-fsa';
 import { reducerWithInitialState } from 'typescript-fsa-reducers';
 
 import { produce } from 'immer';
 
-import ApiCaller from '../ApiCaller';
-
 import type { ReducerBuilder } from 'typescript-fsa-reducers';
-import type { Action, ActionCreatorFactory } from 'typescript-fsa';
+import type { ActionCreatorFactory } from 'typescript-fsa';
 import type { ForkEffect } from 'redux-saga/effects';
 
 import type { ConstructorProps, NamedSelector, StringSelector, CreateApiResult, ExtendedState } from './types';
-import type { API, ApiResponse } from '../types';
+import type { API } from '../types';
 import createEffect from './createEffect';
 
 const emptySelector = () => '';

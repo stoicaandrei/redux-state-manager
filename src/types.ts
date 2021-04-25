@@ -1,5 +1,3 @@
-import { Action } from 'typescript-fsa';
-
 export type API<Payload, Result, ApiState> = {
   path: string;
   method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
