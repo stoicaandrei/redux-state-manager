@@ -65,11 +65,11 @@ const stateManager = new StateManager<StoreState>({
  initialState: {
    auth: {},
  },
- tokenSelector: state => state.auth.item.token, // tell StateManager where to find the JWT token
+ tokenSelector: state => state.auth.token, // tell StateManager where to find the JWT token
  selectors: [ // use this for any other data that has to be sent at every request
     {
       varName: 'session_id',
-      selector: state => state.session.item.id,
+      selector: state => state.active_session.id,
     },
   ],
 });
