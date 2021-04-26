@@ -9,7 +9,7 @@ type ConstructorProps<State> = {
 
 export default class SocketListener<State> {
   private readonly socketUrl: string;
-  public socketEvents: SocketActions;
+  readonly socketEvents: SocketActions;
   readonly sockets: {
     [key: string]: {
       socket: WebSocket;

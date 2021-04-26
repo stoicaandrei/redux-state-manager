@@ -20,6 +20,15 @@ export type ApiResponse<Result> = {
   status: number;
 };
 
+export type SocketAction = {
+  type: string;
+  meta: string;
+  token: string;
+  uri: string;
+  socketDesc: string;
+  payload: any;
+};
+
 export type StringSelector<State> = (state: ExtendedState<State>) => string | undefined;
 export type NamedSelector<State> = {
   varName: string;

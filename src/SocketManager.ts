@@ -3,6 +3,7 @@ import { actionCreatorFactory, Success, ActionCreatorFactory } from 'typescript-
 import produce, { Draft } from 'immer';
 
 type ConstructorProps<State> = {
+  socketUrl: string;
   reducer: Reducer<State>;
 };
 
@@ -10,9 +11,11 @@ export default class SocketManager<State> {
   private readonly reducer: Reducer<State>;
   private readonly actionCreator: ActionCreatorFactory;
 
-  public socketEvents: SocketActions
+  readonly socketEvents: SocketActions;
+  readonly socketUrl: string;
 
   constructor(props: ConstructorProps<State>) {
+    this.socketUrl = props.socketUrl;
     this.reducer = props.reducer;
 
     this.actionCreator = actionCreatorFactory();

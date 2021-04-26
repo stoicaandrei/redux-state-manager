@@ -5,6 +5,8 @@ import { reducerWithInitialState } from 'typescript-fsa-reducers';
 import ApiManager from './ApiManager';
 import SocketManager from './SocketManager';
 
+import createSocketMiddleware from './createSocketMiddleware';
+
 import type { API, Reducer, Selectors, TokenSelector } from './types';
 import type { StoreEnhancer } from 'redux';
 import { Draft } from 'immer';
@@ -13,6 +15,7 @@ type ReduxMiddleware = () => StoreEnhancer<any>;
 
 type Props<State> = {
   apiUrl: string;
+  socketUrl: string;
   selectors?: Selectors<State>;
   tokenSelector?: TokenSelector<State>;
   initialState: State;
@@ -34,7 +37,7 @@ export default class StateManager<State> {
       tokenSelector: props.tokenSelector,
       reducer: this.reducer,
     });
-    this.socketManager = new SocketManager({ reducer: this.reducer });
+    this.socketManager = new SocketManager({ reducer: this.reducer, socketUrl: props.socketUrl });
 
     if (props.reduxMiddlewares) this.reduxMiddlewares = props.reduxMiddlewares;
   }
@@ -52,7 +55,11 @@ export default class StateManager<State> {
     const saga = this.apiManager.getSaga();
 
     const sagaMiddleware = createSagaMiddleware();
-    const enhancers: StoreEnhancer<any> = compose(applyMiddleware(sagaMiddleware), ...this.reduxMiddlewares);
+    const enhancers: StoreEnhancer<any> = compose(
+      applyMiddleware(sagaMiddleware),
+      createSocketMiddleware(this.socketManager),
+      ...this.reduxMiddlewares,
+    );
 
     const store = createStore(reducer, enhancers);
 
