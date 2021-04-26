@@ -3,6 +3,7 @@ import createSagaMiddleware from 'redux-saga';
 import { reducerWithInitialState } from 'typescript-fsa-reducers';
 
 import ApiManager from './ApiManager';
+import SocketManager from './SocketManager';
 
 import type { API, Reducer, Selectors, TokenSelector } from './types';
 import type { StoreEnhancer } from 'redux';
@@ -19,6 +20,7 @@ type Props<State> = {
 
 export default class StateManager<State> {
   private readonly apiManager: ApiManager<State>;
+  private readonly socketManager: SocketManager<State>;
   private readonly reduxMiddlewares: ReduxMiddleware[] = [];
   private readonly reducer: Reducer<State>;
 
@@ -31,6 +33,7 @@ export default class StateManager<State> {
       tokenSelector: props.tokenSelector,
       reducer: this.reducer,
     });
+    this.socketManager = new SocketManager({ reducer: this.reducer });
 
     if (props.reduxMiddlewares) this.reduxMiddlewares = props.reduxMiddlewares;
   }
