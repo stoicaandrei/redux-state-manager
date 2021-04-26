@@ -1,11 +1,18 @@
-import { ReducerBuilder } from 'typescript-fsa-reducers';
+import type { ReducerBuilder } from 'typescript-fsa-reducers';
+import type { Action } from 'typescript-fsa';
+import type { Draft } from 'immer';
 
-export type API<Payload, Result, ApiState> = {
+export type ExtendedState<State> = State & {
+  lastAction: string;
+  loading: Record<string, boolean>;
+};
+
+export type API<Payload, Result, State> = {
   path: string;
   method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
-  successReducer: (state: ApiState, result: Result, payload: Payload) => void;
-  failReducer?: (state: ApiState, error: Error, payload: Payload) => void;
-  startReducer?: (state: ApiState, payload: Payload) => void;
+  successReducer: (state: Draft<State>, result: Result, payload: Payload) => void;
+  failReducer?: (state: Draft<State>, error: Error, payload: Payload) => void;
+  startReducer?: (state: Draft<State>, payload: Payload) => void;
 };
 
 export type ApiResponse<Result> = {
@@ -13,9 +20,20 @@ export type ApiResponse<Result> = {
   status: number;
 };
 
-export type ExtendedState<State> = State & {
-  lastAction: string;
-  loading: Record<string, boolean>;
+export type StringSelector<State> = (state: ExtendedState<State>) => string | undefined;
+export type NamedSelector<State> = {
+  varName: string;
+  selector: StringSelector<State>;
 };
 
-export type Reducer<State> = ReducerBuilder<Partial<ExtendedState<State>>>
+export type TokenSelector<State> = StringSelector<State>;
+export type Selectors<State> = NamedSelector<State>[];
+
+export type Reducer<State> = ReducerBuilder<ExtendedState<State>>;
+
+export type ActionCaller<Payload> = (payload: Payload) => Action<Payload>;
+export type LoadingSelectorMixin<State> = {
+  loadingSelector: (state: State) => boolean;
+};
+
+export type CreateApiResult<Payload, State> = ActionCaller<Payload> & LoadingSelectorMixin<State>;

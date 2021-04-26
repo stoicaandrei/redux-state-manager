@@ -3,8 +3,7 @@ import { call, put, select, takeEvery } from 'redux-saga/effects';
 import ApiCaller from '../ApiCaller';
 
 import type { Action, AsyncActionCreators } from 'typescript-fsa';
-import type { API, ApiResponse } from '../types';
-import type { Selectors, TokenSelector } from './types';
+import type { API, ApiResponse, Selectors, TokenSelector } from '../types';
 
 type Props<Payload, Result, State> = {
   asyncAction: AsyncActionCreators<Payload, Result, Error>;

@@ -1,12 +1,11 @@
 import { createStore, compose, applyMiddleware } from 'redux';
 import createSagaMiddleware from 'redux-saga';
+import { reducerWithInitialState } from 'typescript-fsa-reducers';
 
 import ApiManager from './ApiManager';
 
-import type { ConstructorProps, ExtendedState, Selectors, TokenSelector } from './ApiManager/types';
-import type { API, Reducer } from './types';
+import type { API, Reducer, Selectors, TokenSelector } from './types';
 import type { StoreEnhancer } from 'redux';
-import { ReducerBuilder, reducerWithInitialState } from 'typescript-fsa-reducers';
 
 type ReduxMiddleware = () => StoreEnhancer<any>;
 
@@ -14,7 +13,7 @@ type Props<State> = {
   apiUrl: string;
   selectors?: Selectors<State>;
   tokenSelector?: TokenSelector<State>;
-  initialState: Partial<ExtendedState<State>>;
+  initialState: State;
   reduxMiddlewares?: ReduxMiddleware[];
 };
 
@@ -24,9 +23,7 @@ export default class StateManager<State> {
   private readonly reducer: Reducer<State>;
 
   constructor(props: Props<State>) {
-    const initialState = props.initialState;
-    initialState.loading = {};
-    this.reducer = reducerWithInitialState(initialState);
+    this.reducer = reducerWithInitialState({ ...props.initialState, loading: {}, lastAction: '' });
 
     this.apiManager = new ApiManager({
       apiUrl: props.apiUrl,
