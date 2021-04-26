@@ -1,5 +1,5 @@
 import type { ReducerBuilder } from 'typescript-fsa-reducers';
-import type { Action } from 'typescript-fsa';
+import type { Action, ActionCreator, Success } from 'typescript-fsa';
 import type { Draft } from 'immer';
 
 export type ExtendedState<State> = State & {
@@ -37,3 +37,7 @@ export type LoadingSelectorMixin<State> = {
 };
 
 export type CreateApiResult<Payload, State> = ActionCaller<Payload> & LoadingSelectorMixin<State>;
+
+export type SocketActions = {
+  [key: string]: ActionCreator<any>;
+}

@@ -1,5 +1,5 @@
-import type { Reducer } from './types';
-import { actionCreatorFactory, ActionCreator, Success, ActionCreatorFactory } from 'typescript-fsa';
+import type { Reducer, SocketActions } from './types';
+import { actionCreatorFactory, Success, ActionCreatorFactory } from 'typescript-fsa';
 import produce, { Draft } from 'immer';
 
 type ConstructorProps<State> = {
@@ -10,9 +10,7 @@ export default class SocketManager<State> {
   private readonly reducer: Reducer<State>;
   private readonly actionCreator: ActionCreatorFactory;
 
-  public socketEvents: {
-    [key: string]: ActionCreator<any>;
-  };
+  public socketEvents: SocketActions
 
   constructor(props: ConstructorProps<State>) {
     this.reducer = props.reducer;
