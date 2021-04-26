@@ -21,17 +21,14 @@ export default class SocketManager<State> {
     this.socketEvents = {};
   }
 
-  createSocketListener<Result>(
-    type: string,
-    onReceive: (state: Draft<State>, result: Result) => void
-  ) {
+  createSocketListener<Result>(type: string, onReceive: (state: Draft<State>, result: Result) => void) {
     const action = this.actionCreator<Success<unknown, Result>>(type);
     this.socketEvents[type] = action;
 
-    this.reducer.case(action, (state, payload: any) =>
+    this.reducer.case(action, (state, { result }) =>
       produce(state, (draft) => {
-        onReceive(draft, payload as Result);
-      })
+        onReceive(draft, result as Result);
+      }),
     );
   }
 }
