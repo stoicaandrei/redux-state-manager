@@ -3,25 +3,36 @@ import createSagaMiddleware from 'redux-saga';
 
 import ApiManager from './ApiManager';
 
-import type { ConstructorProps } from './ApiManager/types';
-import type { API } from './types';
+import type { ConstructorProps, ExtendedState, Selectors, TokenSelector } from './ApiManager/types';
+import type { API, Reducer } from './types';
 import type { StoreEnhancer } from 'redux';
+import { ReducerBuilder, reducerWithInitialState } from 'typescript-fsa-reducers';
 
 type ReduxMiddleware = () => StoreEnhancer<any>;
-type Props = {
+
+type Props<State> = {
+  apiUrl: string;
+  selectors?: Selectors<State>;
+  tokenSelector?: TokenSelector<State>;
+  initialState: Partial<ExtendedState<State>>;
   reduxMiddlewares?: ReduxMiddleware[];
 };
 
 export default class StateManager<State> {
   private readonly apiManager: ApiManager<State>;
   private readonly reduxMiddlewares: ReduxMiddleware[] = [];
+  private readonly reducer: Reducer<State>;
 
-  constructor(props: Props & ConstructorProps<State>) {
+  constructor(props: Props<State>) {
+    const initialState = props.initialState;
+    initialState.loading = {};
+    this.reducer = reducerWithInitialState(initialState);
+
     this.apiManager = new ApiManager({
       apiUrl: props.apiUrl,
       selectors: props.selectors,
       tokenSelector: props.tokenSelector,
-      initialState: props.initialState,
+      reducer: this.reducer,
     });
 
     if (props.reduxMiddlewares) this.reduxMiddlewares = props.reduxMiddlewares;
@@ -32,7 +43,7 @@ export default class StateManager<State> {
   }
 
   getStore() {
-    const { reducer } = this.apiManager;
+    const { reducer } = this;
     const saga = this.apiManager.getSaga();
 
     const sagaMiddleware = createSagaMiddleware();

@@ -7,18 +7,31 @@ import type { ReducerBuilder } from 'typescript-fsa-reducers';
 import type { ActionCreatorFactory } from 'typescript-fsa';
 import type { ForkEffect } from 'redux-saga/effects';
 
-import type { ConstructorProps, NamedSelector, StringSelector, CreateApiResult, ExtendedState } from './types';
-import type { API } from '../types';
+import type {
+  NamedSelector,
+  StringSelector,
+  CreateApiResult,
+  ExtendedState,
+  Selectors, TokenSelector,
+} from './types';
+import type { API, Reducer } from '../types';
 import createEffect from './createEffect';
 
 const emptySelector = () => '';
+
+type ConstructorProps<State> = {
+  apiUrl: string;
+  selectors?: Selectors<State>;
+  tokenSelector?: TokenSelector<State>;
+  reducer: Reducer<State>
+}
 
 export default class ApiManager<S> {
   private apiUrl: string;
   private selectors: NamedSelector<ExtendedState<S>>[];
   private tokenSelector: StringSelector<ExtendedState<S>>;
 
-  readonly reducer: ReducerBuilder<Partial<ExtendedState<S>>>;
+  readonly reducer: Reducer<S>;
   private actionCreator: ActionCreatorFactory;
   private effects: ForkEffect[] = [];
 
@@ -27,8 +40,7 @@ export default class ApiManager<S> {
     this.selectors = props.selectors || [];
     this.tokenSelector = props.tokenSelector || emptySelector;
 
-    props.initialState.loading = {};
-    this.reducer = reducerWithInitialState(props.initialState);
+    this.reducer = props.reducer;
     this.actionCreator = actionCreatorFactory();
   }
 
