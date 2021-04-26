@@ -7,6 +7,7 @@ import SocketManager from './SocketManager';
 
 import type { API, Reducer, Selectors, TokenSelector } from './types';
 import type { StoreEnhancer } from 'redux';
+import { Draft } from 'immer';
 
 type ReduxMiddleware = () => StoreEnhancer<any>;
 
@@ -38,8 +39,12 @@ export default class StateManager<State> {
     if (props.reduxMiddlewares) this.reduxMiddlewares = props.reduxMiddlewares;
   }
 
-  createApi<Payload, Result, T>(actionName: string, api: API<Payload, Result, State>) {
+  createApi<Payload, Result>(actionName: string, api: API<Payload, Result, State>) {
     return this.apiManager.createApi<Payload, Result>(actionName, api);
+  }
+
+  createSocketListener<Result>(type: string, onReceive: (state: Draft<State>, result: Result) => void) {
+    return this.socketManager.createSocketListener<Result>(type, onReceive);
   }
 
   getStore() {
