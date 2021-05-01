@@ -56,7 +56,7 @@ export const fetchPet = stateManager.createApi<
 
 import StateManager from 'redux-state-manager';
 
-export interface AppState {}; // this will be set as the type of the entire redux store
+interface AppState {}; // this will be set as the type of the entire redux store
 
 const API_URL = 'http://localhost:8000/api';
 const SOCKET_URL = 'ws://localhost:8000/api';
@@ -88,11 +88,11 @@ import ReactDOM from 'react-dom';
 
 import App from './App';
 
-import stateManager from 'stateManager';
+import { getStore } from 'stateManager';
 import { Provider as ReduxProvider } from 'react-redux';
 
 ReactDOM.render(
-  <ReduxProvider store={stateManager.getStore()}>
+  <ReduxProvider store={getStore()}>
     <App />
   </ReduxProvider>,
   document.getElementById('root')
