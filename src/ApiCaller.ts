@@ -4,32 +4,32 @@ import type { ApiResponse } from './types';
 
 type ApiParams<Payload> = {
   path: string;
-  method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
-  data?: Payload;
+  method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+  data: Payload;
   token?: string;
   apiUrl: string;
 };
 
-export default async function apiCaller<Payload, Result>({
-  path,
-  method = 'GET',
-  data,
-  token,
-  apiUrl,
-}: ApiParams<Payload>): Promise<ApiResponse<Result>> {
-  const query = '?' + queryString.stringify((data as any) || {});
+export default async function apiCaller<Payload extends Record<any, any>, Result>(
+  params: ApiParams<Payload>,
+): Promise<ApiResponse<Result>> {
+  const { path, method, token, apiUrl } = params;
+  const data = { ...params.data };
 
   let url = `${apiUrl}${path}`;
   if (!url.endsWith('/')) url += '/';
 
-  if (method === 'GET') url += query;
+  if (method === 'GET') {
+    const query = '?' + queryString.stringify(data);
+    url += query;
+  }
 
   const urlParams = path.split('/').filter((s) => s[0] === ':');
 
   urlParams.forEach((param) => {
     const key = param.slice(1);
-    url = url.replace(param, (data as any)[key]);
-    (data as any)[key] = undefined;
+    url = url.replace(param, data[key]);
+    delete data[key];
   });
 
   const headers = new Headers();
