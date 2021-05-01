@@ -37,12 +37,11 @@ export default class StateManager<State> {
     this.socketManager = new SocketManager({ reducer: this.reducer, socketUrl: props.socketUrl });
   }
 
-  createApi<Payload, Result>(actionName: string, api: API<Payload, Result, State>) {
-    return this.apiManager.createApi<Payload, Result>(actionName, api);
-  }
-
-  createSocketListener<Result>(type: string, onReceive: (state: Draft<State>, result: Result) => void) {
-    return this.socketManager.createSocketListener<Result>(type, onReceive);
+  public get managers() {
+    return {
+      apiManager: this.apiManager,
+      socketManager: this.socketManager,
+    };
   }
 
   getStore() {
@@ -53,7 +52,7 @@ export default class StateManager<State> {
     const enhancers: StoreEnhancer<any> = compose(
       applyMiddleware(sagaMiddleware),
       createSocketMiddleware(this.socketManager),
-      devToolsEnhancer({})
+      devToolsEnhancer({}),
     );
 
     const store = createStore(reducer, enhancers);
