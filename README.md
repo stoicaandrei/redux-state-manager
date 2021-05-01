@@ -54,29 +54,30 @@ export const fetchPet = stateManager.createApi<
 ```js
 // stateManager.ts
 
-import { StateManager } from 'redux-state-manager';
+import StateManager from 'redux-state-manager';
 
-export type StoreState = {}; // this will help us later
+interface AppState {}; // this will be set as the type of the entire redux store
 
 const API_URL = 'http://localhost:8000/api';
+const SOCKET_URL = 'ws://localhost:8000/api';
 
-const stateManager = new StateManager<StoreState>({
- apiUrl: API_URL, 
- initialState: {
-   auth: {},
- },
- tokenSelector: state => state.auth.token, // tell StateManager where to find the JWT token
- selectors: [ // use this for any other data that has to be sent at every request
-    {
-      varName: 'session_id',
-      selector: state => state.active_session.id,
-    },
-  ],
+const stateManager = new StateManager<AppState>({
+ apiUrl: API_URL,
+ socketUrl: SOCKET_URL,
 });
 
-export default stateManager
+const { apiManager, socketManager } = stateManager.managers;
+const { useSelector, useDispatch } = stateManager.hooks;
+
+export default {
+ apiManager,
+ socketManager,
+ getStore: stateManager.getStore,
+ useSelector,
+ useDispatch,
+}
 ```
-You will import this component for the actions regarding redux-state-manager
+There are the components necessary to handle all the state management
 
 ### Connect to Redux Store
 
@@ -87,11 +88,12 @@ import ReactDOM from 'react-dom';
 
 import App from './App';
 
-import stateManager from 'stateManager';
+// It's important that you import getStore and importing the App
+import { getStore } from 'stateManager';
 import { Provider as ReduxProvider } from 'react-redux';
 
 ReactDOM.render(
-  <ReduxProvider store={stateManager.getStore()}>
+  <ReduxProvider store={getStore()}>
     <App />
   </ReduxProvider>,
   document.getElementById('root')
