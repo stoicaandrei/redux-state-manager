@@ -32,4 +32,24 @@ export default class SocketManager<State> {
       }),
     );
   }
+
+  createSocketConnectAction(uri: string, socketDesc: string, options: { id?: number } = {}) {
+    return (token: string, sessionId?: string) => ({
+      type: 'SOCKET_CONNECT',
+      meta: 'SOCKET_COMMAND',
+      token,
+      uri: options.id ? `${uri}/${sessionId}/` : uri,
+      socketDesc,
+    });
+  }
+
+  createSocketDisconnectAction(uri: string, socketDesc: string, options: { id?: number } = {}) {
+    return (token: string, sessionId?: string) => ({
+      type: 'SOCKET_DISCONNECT',
+      meta: 'SOCKET_COMMAND',
+      token,
+      uri: options.id ? `${uri}/${sessionId}/` : uri,
+      socketDesc,
+    });
+  }
 }

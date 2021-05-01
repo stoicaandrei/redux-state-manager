@@ -45,26 +45,6 @@ export default class StateManager<State> {
     return this.socketManager.createSocketListener<Result>(type, onReceive);
   }
 
-  createSocketConnectAction(uri: string, socketDesc: string, options: { id?: number } = {}) {
-    return (token: string, sessionId?: string) => ({
-      type: 'SOCKET_CONNECT',
-      meta: 'SOCKET_COMMAND',
-      token,
-      uri: options.id ? `${uri}/${sessionId}/` : uri,
-      socketDesc,
-    });
-  }
-
-  createSocketDisconnectAction(uri: string, socketDesc: string, options: { id?: number } = {}) {
-    return (token: string, sessionId?: string) => ({
-      type: 'SOCKET_DISCONNECT',
-      meta: 'SOCKET_COMMAND',
-      token,
-      uri: options.id ? `${uri}/${sessionId}/` : uri,
-      socketDesc,
-    });
-  }
-
   getStore() {
     const { reducer } = this;
     const saga = this.apiManager.getSaga();
