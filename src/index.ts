@@ -1,1 +1,3 @@
-export { default as StateManager } from './StateManager';
+import StateManager from './StateManager';
+
+export default StateManager;
