@@ -1,10 +1,9 @@
 import { actionCreatorFactory } from 'typescript-fsa';
-import { reducerWithInitialState } from 'typescript-fsa-reducers';
 
-import { produce, Draft } from 'immer';
 import createEffect from './createEffect';
+import createReducerCases from './createReducerCases';
+import createReturnAction from './createReturnAction';
 
-import type { ReducerBuilder } from 'typescript-fsa-reducers';
 import type { ActionCreatorFactory } from 'typescript-fsa';
 import type { ForkEffect } from 'redux-saga/effects';
 import type { API, Reducer, CreateApiResult, Selectors, TokenSelector } from '../types';
@@ -44,40 +43,31 @@ export default class ApiManager<State> {
     };
   }
 
-  createApi<Payload, Result>(actionName: string, api: API<Payload, Result, State>): CreateApiResult<Payload, Result> {
+  createJsonRequest<Payload extends Record<string, any>, Result>(
+    actionName: string,
+    api: API<Payload, Result, State>,
+  ): CreateApiResult<Payload, State> {
     const asyncAction = this.actionCreator.async<Payload, Result, Error>(actionName);
     const { reducer, tokenSelector, selectors, apiUrl } = this;
 
-    const effect = createEffect({ asyncAction, tokenSelector, selectors, apiUrl, api });
+    const effect = createEffect({ asyncAction, tokenSelector, selectors, apiUrl, api, requestType: 'json' });
     this.effects.push(effect);
+    createReducerCases({ reducer, asyncAction, actionName, api });
 
-    reducer.case(asyncAction.started, (state, payload) =>
-      produce(state, (draft) => {
-        draft.loading[actionName] = true;
-        if (api.startReducer) api.startReducer(draft, payload);
-      }),
-    );
+    return createReturnAction({ asyncAction, actionName });
+  }
 
-    reducer.case(asyncAction.failed, (state, { params, error }) =>
-      produce(state, (draft) => {
-        draft.lastAction = actionName;
-        draft.loading[actionName] = false;
-        if (api.failReducer) api.failReducer(draft, error, params as Payload);
-      }),
-    );
+  createFormRequest<Payload extends Record<string, string | Blob>, Result>(
+    actionName: string,
+    api: API<Payload, Result, State>,
+  ): CreateApiResult<Payload, State> {
+    const asyncAction = this.actionCreator.async<Payload, Result, Error>(actionName);
+    const { reducer, tokenSelector, selectors, apiUrl } = this;
 
-    reducer.case(asyncAction.done, (state, { params, result }) =>
-      produce(state, (draft) => {
-        draft.lastAction = actionName;
-        draft.loading[actionName] = false;
-        api.successReducer(draft, result as Result, params as Payload);
-      }),
-    );
+    const effect = createEffect({ asyncAction, tokenSelector, selectors, apiUrl, api, requestType: 'form' });
+    this.effects.push(effect);
+    createReducerCases({ reducer, asyncAction, actionName, api });
 
-    const returnedAction = (payload: Payload) => asyncAction.started(payload);
-
-    returnedAction.loadingSelector = (state: any) => state.loading[actionName] as boolean;
-
-    return returnedAction;
+    return createReturnAction({ asyncAction, actionName });
   }
 }
