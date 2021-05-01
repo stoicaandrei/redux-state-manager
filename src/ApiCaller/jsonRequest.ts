@@ -1,6 +1,8 @@
 import queryString from 'query-string';
 
-import type { ApiResponse } from './types';
+import { setAuthorizationHeader, transferUrlParams } from './utils';
+
+import type { ApiResponse } from '../types';
 
 type ApiParams<Payload> = {
   path: string;
@@ -10,7 +12,7 @@ type ApiParams<Payload> = {
   apiUrl: string;
 };
 
-export default async function apiCaller<Payload extends Record<any, any>, Result>(
+export default async function jsonRequest<Payload extends Record<string, any>, Result>(
   params: ApiParams<Payload>,
 ): Promise<ApiResponse<Result>> {
   const { path, method, token, apiUrl } = params;
@@ -19,25 +21,17 @@ export default async function apiCaller<Payload extends Record<any, any>, Result
   let url = `${apiUrl}${path}`;
   if (!url.endsWith('/')) url += '/';
 
+  url = transferUrlParams(data, url);
+
   if (method === 'GET') {
     const query = '?' + queryString.stringify(data);
     url += query;
   }
 
-  const urlParams = path.split('/').filter((s) => s[0] === ':');
-
-  urlParams.forEach((param) => {
-    const key = param.slice(1);
-    url = url.replace(param, data[key]);
-    delete data[key];
-  });
-
   const headers = new Headers();
   headers.append('Content-Type', 'application/json');
 
-  if (token) {
-    headers.append('Authorization', `JWT ${token}`);
-  }
+  setAuthorizationHeader(headers, token);
 
   const response = await fetch(url, {
     headers,

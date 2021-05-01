@@ -42,7 +42,7 @@ export type Reducer<State> = ReducerBuilder<ExtendedState<State>>;
 
 export type ActionCaller<Payload> = (payload: Payload) => Action<Payload>;
 export type LoadingSelectorMixin<State> = {
-  loadingSelector: (state: State) => boolean;
+  loadingSelector: (state: ExtendedState<State>) => boolean;
 };
 
 export type CreateApiResult<Payload, State> = ActionCaller<Payload> & LoadingSelectorMixin<State>;
