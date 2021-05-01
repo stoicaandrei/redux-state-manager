@@ -61,7 +61,7 @@ interface AppState {}; // this will be set as the type of the entire redux store
 const API_URL = 'http://localhost:8000/api';
 const SOCKET_URL = 'ws://localhost:8000/api';
 
-const stateManager = new StateManager<StoreState>({
+const stateManager = new StateManager<AppState>({
  apiUrl: API_URL,
  socketUrl: SOCKET_URL,
 });
