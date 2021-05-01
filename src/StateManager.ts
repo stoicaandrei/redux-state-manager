@@ -8,9 +8,8 @@ import SocketManager from './SocketManager';
 
 import createSocketMiddleware from './createSocketMiddleware';
 
-import type { API, Reducer, Selectors, TokenSelector } from './types';
+import type { Reducer, Selectors, TokenSelector } from './types';
 import type { StoreEnhancer } from 'redux';
-import { Draft } from 'immer';
 
 type Props<State> = {
   apiUrl: string;
