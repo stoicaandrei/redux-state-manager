@@ -1,6 +1,6 @@
 import { call, put, select, takeEvery } from 'redux-saga/effects';
 
-import ApiCaller from '../ApiCaller';
+import { formRequest, jsonRequest } from '../ApiCaller';
 
 import type { Action, AsyncActionCreators } from 'typescript-fsa';
 import type { API, ApiResponse, Selectors, TokenSelector } from '../types';
@@ -11,6 +11,12 @@ type Props<Payload, Result, State> = {
   selectors: Selectors<State>;
   apiUrl: string;
   api: API<Payload, Result, State>;
+  requestType: 'json' | 'form';
+};
+
+const callers = {
+  json: jsonRequest,
+  form: formRequest,
 };
 
 const createEffect = <Payload, Result, State>({
@@ -19,6 +25,7 @@ const createEffect = <Payload, Result, State>({
   selectors,
   apiUrl,
   api,
+  requestType,
 }: Props<Payload, Result, State>) => {
   return takeEvery(asyncAction.started, function* (action: Action<Payload>): Generator<any> {
     try {
@@ -33,7 +40,7 @@ const createEffect = <Payload, Result, State>({
 
       // call api
       const { result, status } = (yield call(() =>
-        ApiCaller<Payload, Result>({
+        callers[requestType]<Payload, Result>({
           ...api,
           data: { ...additionalVars, ...action.payload },
           token,
