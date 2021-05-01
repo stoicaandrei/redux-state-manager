@@ -49,4 +49,6 @@ export type CreateApiResult<Payload, State> = ActionCaller<Payload> & LoadingSel
 
 export type SocketActions = {
   [key: string]: ActionCreator<any>;
-}
+};
+
+export type StateSelector<T, State> = (state: ExtendedState<State>) => T;

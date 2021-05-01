@@ -7,6 +7,7 @@ import ApiManager from './ApiManager';
 import SocketManager from './SocketManager';
 
 import createSocketMiddleware from './createSocketMiddleware';
+import { getDispatchHook, getSelectorHook } from './hooks';
 
 import type { Reducer, Selectors, TokenSelector } from './types';
 import type { StoreEnhancer } from 'redux';
@@ -40,6 +41,13 @@ export default class StateManager<State> {
     return {
       apiManager: this.apiManager,
       socketManager: this.socketManager,
+    };
+  }
+
+  public get selectors() {
+    return {
+      useSelector: getSelectorHook<State>(),
+      useDispatch: getDispatchHook(),
     };
   }
 
