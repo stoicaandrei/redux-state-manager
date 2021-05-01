@@ -88,6 +88,7 @@ import ReactDOM from 'react-dom';
 
 import App from './App';
 
+// It's important that you import getStore and importing the App
 import { getStore } from 'stateManager';
 import { Provider as ReduxProvider } from 'react-redux';
 
