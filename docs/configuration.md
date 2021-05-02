@@ -21,7 +21,7 @@ type User = {
   name: string;
 };
 
-type State = {
+type State = { 
   authToken: string;
   users: User[];
 };

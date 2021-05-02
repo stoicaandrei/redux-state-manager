@@ -1,3 +1,4 @@
 * [Home](/)
 * [Quick Start](quickstart.md)
 * [Configuration](configuration.md)
+* [API Manager](apimanager.md)
