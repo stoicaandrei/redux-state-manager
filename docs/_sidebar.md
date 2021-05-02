@@ -2,3 +2,4 @@
 * [Quick Start](quickstart.md)
 * [Configuration](configuration.md)
 * [API Manager](apimanager.md)
+* [Socket Manager](socketmanager.md)
