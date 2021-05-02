@@ -44,7 +44,7 @@ export default class StateManager<State> {
     };
   }
 
-  public get selectors() {
+  public get hooks() {
     return {
       useSelector: getSelectorHook<State>(),
       useDispatch: getDispatchHook(),
