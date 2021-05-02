@@ -13,8 +13,8 @@ import type { Reducer, Selectors, TokenSelector } from './types';
 import type { StoreEnhancer } from 'redux';
 
 type Props<State> = {
-  apiUrl: string;
-  socketUrl: string;
+  apiUrl?: string;
+  socketUrl?: string;
   selectors?: Selectors<State>;
   tokenSelector?: TokenSelector<State>;
   initialState: State;
@@ -29,12 +29,12 @@ export default class StateManager<State> {
     this.reducer = reducerWithInitialState({ ...props.initialState, loading: {}, lastAction: '' });
 
     this.apiManager = new ApiManager({
-      apiUrl: props.apiUrl,
+      apiUrl: props.apiUrl || '',
       selectors: props.selectors,
       tokenSelector: props.tokenSelector,
       reducer: this.reducer,
     });
-    this.socketManager = new SocketManager({ reducer: this.reducer, socketUrl: props.socketUrl });
+    this.socketManager = new SocketManager({ reducer: this.reducer, socketUrl: props.socketUrl || '' });
   }
 
   public get managers() {
