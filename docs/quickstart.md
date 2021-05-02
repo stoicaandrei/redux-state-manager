@@ -30,6 +30,8 @@ export default {
 }
 ```
 
+See all the configuration options in the [configuration section](configuration.md)
+
 ## State Provider
 
 In my `index.tsx` I have
