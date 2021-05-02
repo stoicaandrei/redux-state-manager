@@ -12,14 +12,14 @@ const emptySelector = () => '';
 
 type ConstructorProps<State> = {
   apiUrl: string;
-  selectors?: Selectors<State>;
+  permanentParamsSelectors?: Selectors<State>;
   tokenSelector?: TokenSelector<State>;
   reducer: Reducer<State>;
 };
 
 export default class ApiManager<State> {
   private apiUrl: string;
-  private selectors: Selectors<State>;
+  private permanentParamsSelectors: Selectors<State>;
   private tokenSelector: TokenSelector<State>;
 
   readonly reducer: Reducer<State>;
@@ -28,7 +28,7 @@ export default class ApiManager<State> {
 
   constructor(props: ConstructorProps<State>) {
     this.apiUrl = props.apiUrl;
-    this.selectors = props.selectors || [];
+    this.permanentParamsSelectors = props.permanentParamsSelectors || [];
     this.tokenSelector = props.tokenSelector || emptySelector;
 
     this.reducer = props.reducer;
@@ -48,9 +48,16 @@ export default class ApiManager<State> {
     api: API<Payload, Result, State>,
   ): CreateApiResult<Payload, State> {
     const asyncAction = this.actionCreator.async<Payload, Result, Error>(actionName);
-    const { reducer, tokenSelector, selectors, apiUrl } = this;
+    const { reducer, tokenSelector, permanentParamsSelectors, apiUrl } = this;
 
-    const effect = createEffect({ asyncAction, tokenSelector, selectors, apiUrl, api, requestType: 'json' });
+    const effect = createEffect({
+      asyncAction,
+      tokenSelector,
+      permanentParamsSelectors,
+      apiUrl,
+      api,
+      requestType: 'json',
+    });
     this.effects.push(effect);
     createReducerCases({ reducer, asyncAction, actionName, api });
 
@@ -62,9 +69,16 @@ export default class ApiManager<State> {
     api: API<Payload, Result, State>,
   ): CreateApiResult<Payload, State> {
     const asyncAction = this.actionCreator.async<Payload, Result, Error>(actionName);
-    const { reducer, tokenSelector, selectors, apiUrl } = this;
+    const { reducer, tokenSelector, permanentParamsSelectors, apiUrl } = this;
 
-    const effect = createEffect({ asyncAction, tokenSelector, selectors, apiUrl, api, requestType: 'form' });
+    const effect = createEffect({
+      asyncAction,
+      tokenSelector,
+      permanentParamsSelectors,
+      apiUrl,
+      api,
+      requestType: 'form',
+    });
     this.effects.push(effect);
     createReducerCases({ reducer, asyncAction, actionName, api });
 

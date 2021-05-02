@@ -15,7 +15,7 @@ import type { StoreEnhancer } from 'redux';
 type Props<State> = {
   apiUrl?: string;
   socketUrl?: string;
-  selectors?: Selectors<State>;
+  permanentParamsSelectors?: Selectors<State>;
   tokenSelector?: TokenSelector<State>;
   initialState: State;
 };
@@ -30,7 +30,7 @@ export default class StateManager<State> {
 
     this.apiManager = new ApiManager({
       apiUrl: props.apiUrl || '',
-      selectors: props.selectors,
+      permanentParamsSelectors: props.permanentParamsSelectors,
       tokenSelector: props.tokenSelector,
       reducer: this.reducer,
     });

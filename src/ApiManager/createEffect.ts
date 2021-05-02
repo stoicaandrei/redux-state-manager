@@ -8,7 +8,7 @@ import type { API, ApiResponse, Selectors, TokenSelector } from '../types';
 type Props<Payload, Result, State> = {
   asyncAction: AsyncActionCreators<Payload, Result, Error>;
   tokenSelector: TokenSelector<State>;
-  selectors: Selectors<State>;
+  permanentParamsSelectors: Selectors<State>;
   apiUrl: string;
   api: API<Payload, Result, State>;
   requestType: 'json' | 'form';
@@ -22,7 +22,7 @@ const callers = {
 const createEffect = <Payload, Result, State>({
   asyncAction,
   tokenSelector,
-  selectors,
+  permanentParamsSelectors,
   apiUrl,
   api,
   requestType,
@@ -33,7 +33,7 @@ const createEffect = <Payload, Result, State>({
       const token = (yield select(tokenSelector)) as string;
 
       const additionalVars: Record<string, string> = {};
-      for (const item of selectors) {
+      for (const item of permanentParamsSelectors) {
         const { varName, selector } = item;
         additionalVars[varName] = (yield select(selector)) as string;
       }
