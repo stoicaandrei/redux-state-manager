@@ -8,7 +8,7 @@ type Props<Payload, Result, State> = {
 
 const createReturnAction = <Payload, Result, State>({ asyncAction, actionName }: Props<Payload, Result, State>) => {
   const returnedAction = (payload: Payload) => asyncAction.started(payload);
-  returnedAction.loadingSelector = (state: ExtendedState<State>) => state.loading[actionName] as boolean;
+  returnedAction.loadingSelector = (state: ExtendedState<State>) => state._loading[actionName] as boolean;
   return returnedAction;
 };
 

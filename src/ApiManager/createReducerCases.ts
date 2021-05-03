@@ -17,7 +17,7 @@ const createReducerCases = <Payload, Result, State>({
 }: Props<Payload, Result, State>) => {
   reducer.case(asyncAction.started, (state, payload) =>
     produce(state, (draft) => {
-      draft.loading[actionName] = true;
+      draft._loading[actionName] = true;
       if (api.startReducer) api.startReducer(draft, payload);
     }),
   );
@@ -25,7 +25,7 @@ const createReducerCases = <Payload, Result, State>({
   reducer.case(asyncAction.failed, (state, { params, error }) =>
     produce(state, (draft) => {
       draft.lastAction = actionName;
-      draft.loading[actionName] = false;
+      draft._loading[actionName] = false;
       if (api.failReducer) api.failReducer(draft, error, params as Payload);
     }),
   );
@@ -33,7 +33,7 @@ const createReducerCases = <Payload, Result, State>({
   reducer.case(asyncAction.done, (state, { params, result }) =>
     produce(state, (draft) => {
       draft.lastAction = actionName;
-      draft.loading[actionName] = false;
+      draft._loading[actionName] = false;
       api.successReducer(draft, result as Result, params as Payload);
     }),
   );

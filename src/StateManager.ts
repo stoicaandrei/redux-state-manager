@@ -26,7 +26,7 @@ export default class StateManager<State> {
   private readonly reducer: Reducer<State>;
 
   constructor(props: Props<State>) {
-    this.reducer = reducerWithInitialState({ ...props.initialState, loading: {}, lastAction: '' });
+    this.reducer = reducerWithInitialState({ ...props.initialState, _loading: {}, lastAction: '' });
 
     this.apiManager = new ApiManager({
       apiUrl: props.apiUrl || '',

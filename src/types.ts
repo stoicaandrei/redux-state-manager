@@ -4,7 +4,7 @@ import type { Draft } from 'immer';
 
 export type ExtendedState<State> = State & {
   lastAction: string;
-  loading: Record<string, boolean>;
+  _loading: Record<string, boolean>;
 };
 
 export type API<Payload, Result, State> = {
