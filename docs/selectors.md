@@ -18,6 +18,10 @@ const Greetings: React.FC = () => {
 ## Loading Selectors
 redux-state-manager provides an useful selector for api loading. Every apiRequest created comes with a `loadingSelector` attached.
 
+```js
+action.loadingSelector = (state) => state._loading[action.actionName];
+```
+
 Example:
 ```js
 import React from 'react';
