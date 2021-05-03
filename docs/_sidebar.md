@@ -4,3 +4,4 @@
 * [API Manager](apimanager.md)
 * [Socket Manager](socketmanager.md)
 * [Selectors](selectors.md)
+* [Debugging](debugging.md)
