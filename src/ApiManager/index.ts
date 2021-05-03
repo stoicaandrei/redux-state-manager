@@ -26,6 +26,8 @@ export default class ApiManager<State> {
   private actionCreator: ActionCreatorFactory;
   private effects: ForkEffect[] = [];
 
+  private handledActions: Record<string, boolean> = {};
+
   constructor(props: ConstructorProps<State>) {
     this.apiUrl = props.apiUrl;
     this.permanentParamsSelectors = props.permanentParamsSelectors || [];
@@ -48,6 +50,10 @@ export default class ApiManager<State> {
     api: API<Payload, Result, State>,
   ): CreateApiResult<Payload, State> {
     const asyncAction = this.actionCreator.async<Payload, Result, Error>(actionName);
+
+    if (this.handledActions[actionName]) return createReturnAction({ asyncAction, actionName });
+    this.handledActions[actionName] = true;
+
     const { reducer, tokenSelector, permanentParamsSelectors, apiUrl } = this;
 
     const effect = createEffect({
@@ -69,6 +75,10 @@ export default class ApiManager<State> {
     api: API<Payload, Result, State>,
   ): CreateApiResult<Payload, State> {
     const asyncAction = this.actionCreator.async<Payload, Result, Error>(actionName);
+
+    if (this.handledActions[actionName]) return createReturnAction({ asyncAction, actionName });
+    this.handledActions[actionName] = true;
+
     const { reducer, tokenSelector, permanentParamsSelectors, apiUrl } = this;
 
     const effect = createEffect({
