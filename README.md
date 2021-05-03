@@ -1,6 +1,6 @@
 # redux state manager
 
-Easy, typescript friendly, redux store management for APIs and sockets
+Easy, typescript friendly, redux store management for APIs and sockets. [Read the docs](https://github.com/stoicaandrei/redux-state-manager) to know more
 
 ## What is it?
 Redux State Manager is a library, written on top of redux-saga, that removes boilerplate code and provides and intuitive mode to call `APIs`, received `WebSocket` messages and manipulate `state` data. 
