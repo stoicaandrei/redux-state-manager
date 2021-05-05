@@ -4,7 +4,7 @@
 In order to access the state, you need to make use of the `useSelector` hook
 
 Example:
-```js
+```tsx
 import React from 'react';
 import { useSelector } from 'stateManager';
 
@@ -18,12 +18,12 @@ const Greetings: React.FC = () => {
 ## Loading Selectors
 redux-state-manager provides an useful selector for api loading. Every apiRequest created comes with a `loadingSelector` attached.
 
-```js
+```tsx
 action.loadingSelector = (state) => state._loading[action.actionName];
 ```
 
 Example:
-```js
+```tsx
 import React from 'react';
 import { useDispatch, useSelector } from 'stateManager';
 

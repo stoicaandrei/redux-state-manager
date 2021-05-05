@@ -13,7 +13,7 @@ npm install --save redux-state-manager
 ## State Manager Instance
 
 In my `stateManager.ts` I have:
-```js
+```tsx
 import StateManager from 'redux-state-manager';
 
 const stateManager = new StateManager({});
@@ -35,7 +35,7 @@ See all the configuration options in the [configuration section](configuration.m
 ## State Provider
 
 In my `index.tsx` I have
-```js
+```tsx
 import React from 'react';
 import ReactDOM from 'react-dom';
 

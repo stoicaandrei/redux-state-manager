@@ -4,7 +4,7 @@ This manager is used for creating API requests and handling the data received fr
 
 ## API type
 This is the main data necessary for creating an API request
-```js
+```tsx
 type API<Payload, Result, State> = {
   path: string;
   method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
@@ -25,14 +25,14 @@ This is the most common request that will probably be used.
 Header `Content-Type: application/json` will be set for every request.
 
 The method is defined as followed
-```js
+```tsx
 createJsonRequest<Payload, Result>(actionName: string, api: API)
 ```
 - `actionName` must be unique for every request
 Let's take a login action as an example
 
 ### Creating JSON Requests
-```js
+```tsx
 import { apiManager } from 'stateManager';
 
 type LoginPayload = {
@@ -58,7 +58,7 @@ export const login = apiManager.createJsonRequest<
 ### Using JSON Requests
 Using the requests is straightforward
 
-```js
+```tsx
 import React from 'react';
 import { useDispatch } from 'stateManager';
 
@@ -79,7 +79,7 @@ const LoginButton: React.FC = () => {
 ## Form Requests
 Form requests work the same way as the JSON ones, but they don't provide the `Content-Type: application/json` header, and are used for `file uploading`.
 
-```js
+```tsx
 import { apiManager } from 'stateManager';
 
 type UploadPicPayload = {

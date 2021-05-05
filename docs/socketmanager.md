@@ -5,13 +5,13 @@ The socket messages must be in the format `{ type: string, data: object }`
 
 ## Create Socket Listener
 The methods used for creating listeners is defined as followed.
-```js
+```tsx
 createSocketListener<Result>(type: string, onReceive: (state: Draft<State>, result: Result) => void)
 ```
 - `type` corresponds with the type from the message format
 
 Example:
-```js
+```tsx
 import { socketManager } from 'stateManager';
 
 type Message = {

@@ -1,13 +1,13 @@
 ## API Url
 Set the `API` endpoint for the state manager.
-```js
+```tsx
 const API_URL = 'http://localhost:8000/api';
 const stateManager = new StateManager({ apiUrl: API_URL });
 ```
 
 ## Web Socket Url
 Set the `WebSocket` endpoint for the state manager.
-```js
+```tsx
 const SOCKET_URL = 'ws://localhost:8000/api';
 const stateManager = new StateManager({ socketUrl: SOCKET_URL });
 ```
@@ -15,7 +15,7 @@ const stateManager = new StateManager({ socketUrl: SOCKET_URL });
 ## State Type Definition
 Define the `type` of the state that the manager will keep track of.
 
-```js
+```tsx
 type User = {
   id: number;
   name: string;
@@ -31,7 +31,7 @@ const stateManager = new StateManager<State>({});
 ## Initial State
 Define initial values for the state based on the `State` type defined.
 
-```js
+```tsx
 const stateManager = new StateManager<State>({
   initialState: {
     users: [{id: 0, name: 'mock_user'}],
@@ -41,7 +41,7 @@ const stateManager = new StateManager<State>({
 
 ## Token Selector
 Specify where the token for authentication will be found
-```js
+```tsx
 const stateManager = new StateManager<State>({
   tokenSelector: state => state.authToken,
 });
@@ -53,7 +53,7 @@ Authorization: JWT <your_token>
 
 ## Permanent Params Selectors
 Similarly to `token selector`, this is used for parameters that need to be sent with every request.
-```js
+```tsx
 const stateManager = new StateManager<State>({
   permanentParamsSelectors: [
     {varName: 'session_id', selector: state => state.session_id},
