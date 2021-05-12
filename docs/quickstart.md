@@ -22,7 +22,13 @@ const { apiManager, socketManager } = stateManager.managers;
 const { useSelector, useDispatch } = stateManager.hooks;
 const getStore = stateManager.getStore.bind(stateManager);
 
-export {apiManager, socketManager, useSelector, useDispatch, getStore};
+export {
+    apiManager, 
+    socketManager, 
+    useSelector, 
+    useDispatch, 
+    getStore
+};
 ```
 
 See all the configuration options in the [configuration section](configuration.md)
