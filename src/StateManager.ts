@@ -17,7 +17,7 @@ type Props<State> = {
   socketUrl?: string;
   permanentParamsSelectors?: Selectors<State>;
   tokenSelector?: TokenSelector<State>;
-  initialState: State;
+  initialState?: State;
 };
 
 export default class StateManager<State> {
@@ -26,6 +26,7 @@ export default class StateManager<State> {
   private readonly reducer: Reducer<State>;
 
   constructor(props: Props<State>) {
+    props.initialState = props.initialState || ({} as State);
     this.reducer = reducerWithInitialState({ ...props.initialState, _loading: {}, lastAction: '' });
 
     this.apiManager = new ApiManager({
