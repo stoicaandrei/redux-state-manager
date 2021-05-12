@@ -20,14 +20,9 @@ const stateManager = new StateManager({});
 
 const { apiManager, socketManager } = stateManager.managers;
 const { useSelector, useDispatch } = stateManager.hooks;
+const getStore = stateManager.getStore.bind(stateManager);
 
-export default {
- apiManager,
- socketManager,
- getStore: stateManager.getStore,
- useSelector,
- useDispatch,
-}
+export {apiManager, socketManager, useSelector, useDispatch, getStore};
 ```
 
 See all the configuration options in the [configuration section](configuration.md)
