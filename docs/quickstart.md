@@ -38,12 +38,12 @@ import App from './App';
 
 // It's important that you import getStore after importing the App
 import { getStore } from 'stateManager';
-import { Provider as ReduxProvider } from 'redux-state-manager';
+import { StateProvider } from 'redux-state-manager';
 
 ReactDOM.render(
-  <ReduxProvider store={getStore()}>
+  <StateProvider store={getStore()}>
     <App />
-  </ReduxProvider>,
+  </StateProvider>,
   document.getElementById('root')
 );
 
