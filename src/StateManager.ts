@@ -58,7 +58,7 @@ export default class StateManager<State> {
     const sagaMiddleware = createSagaMiddleware();
     const enhancers: StoreEnhancer<any> = compose(
       applyMiddleware(sagaMiddleware),
-      createSocketMiddleware(this.socketManager),
+      applyMiddleware(createSocketMiddleware(this.socketManager)),
       devToolsEnhancer({}),
     );
 
