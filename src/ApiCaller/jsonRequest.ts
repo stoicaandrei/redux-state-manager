@@ -24,7 +24,7 @@ export default async function jsonRequest<Payload extends Record<string, any>, R
   url = transferUrlParams(data, url);
 
   if (method === 'GET') {
-    const query = '?' + queryString.stringify(data);
+    const query = '?' + new URLSearchParams(data).toString();
     url += query;
   }
 
