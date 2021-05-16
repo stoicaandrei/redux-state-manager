@@ -1,4 +1,4 @@
-export const setAuthorizationHeader = (headers: Headers, token?: string, tokenType?: 'JWT') => {
+export const setAuthorizationHeader = (headers: Headers, token?: string, tokenType = 'JWT') => {
   if (!token) return;
 
   headers.append('Authorization', `${tokenType} ${token}`);
