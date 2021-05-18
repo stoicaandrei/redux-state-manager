@@ -5,6 +5,7 @@ import { reducerWithInitialState } from 'typescript-fsa-reducers';
 
 import ApiManager from './ApiManager';
 import SocketManager from './SocketManager';
+import SocketListener from "./SocketListener";
 
 import createSocketMiddleware from './createSocketMiddleware';
 import { getDispatchHook, getSelectorHook } from './hooks';
@@ -56,10 +57,15 @@ export default class StateManager<State> {
     const { reducer } = this;
     const saga = this.apiManager.getSaga();
 
+    const socketListener = new SocketListener({
+      socketUrl: this.socketManager.socketUrl,
+      socketEvents: this.socketManager.socketEvents,
+    });
+
     const sagaMiddleware = createSagaMiddleware();
     const enhancers: StoreEnhancer<any> = compose(
       applyMiddleware(sagaMiddleware),
-      applyMiddleware(createSocketMiddleware(this.socketManager)),
+      applyMiddleware(createSocketMiddleware(socketListener)),
       devToolsEnhancer({}),
     );
 

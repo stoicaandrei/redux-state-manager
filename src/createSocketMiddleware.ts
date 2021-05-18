@@ -10,20 +10,15 @@ import {
 } from './constants';
 
 import { SocketAction } from './types';
-import SocketManager from './SocketManager';
 import SocketListener from './SocketListener';
 
-export default function createSocketMiddleware<State>(socketManager: SocketManager<State>) {
+export default function createSocketMiddleware<State>(socketListener: SocketListener<State>) {
   return (store: any) => (next: any) => (action: SocketAction) => {
     if (!(action.meta === SOCKET_COMMAND)) {
       return next(action);
     }
 
     const res = next(action);
-    const socketListener = new SocketListener({
-      socketUrl: socketManager.socketUrl,
-      socketEvents: socketManager.socketEvents,
-    });
 
     switch (action.type) {
       case SOCKET_CONNECT:
