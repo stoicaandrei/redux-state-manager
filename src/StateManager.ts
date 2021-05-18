@@ -5,7 +5,7 @@ import { reducerWithInitialState } from 'typescript-fsa-reducers';
 
 import ApiManager from './ApiManager';
 import SocketManager from './SocketManager';
-import SocketListener from "./SocketListener";
+import SocketListener from './SocketListener';
 
 import createSocketMiddleware from './createSocketMiddleware';
 import { getDispatchHook, getSelectorHook } from './hooks';
