@@ -33,22 +33,22 @@ export default class SocketManager<State> {
     );
   }
 
-  createSocketConnectAction(uri: string, socketDesc: string, options: { id?: number } = {}) {
-    return (token: string, sessionId?: string) => ({
+  createSocketConnectAction(uri: string, socketDesc: string, options: { id?: boolean } = {}) {
+    return (token: string, id?: number) => ({
       type: 'SOCKET_CONNECT',
       meta: 'SOCKET_COMMAND',
       token,
-      uri: options.id ? `${uri}/${sessionId}/` : uri,
+      uri: options.id ? `${uri}/${id}/` : uri,
       socketDesc,
     });
   }
 
-  createSocketDisconnectAction(uri: string, socketDesc: string, options: { id?: number } = {}) {
-    return (token: string, sessionId?: string) => ({
+  createSocketDisconnectAction(uri: string, socketDesc: string, options: { id?: boolean } = {}) {
+    return (token: string, id?: number) => ({
       type: 'SOCKET_DISCONNECT',
       meta: 'SOCKET_COMMAND',
       token,
-      uri: options.id ? `${uri}/${sessionId}/` : uri,
+      uri: options.id ? `${uri}/${id}/` : uri,
       socketDesc,
     });
   }
