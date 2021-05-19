@@ -31,7 +31,6 @@ export default class SocketListener<State> {
     this.socketUrl = props.socketUrl;
     this.socketEvents = props.socketEvents;
 
-    this.socketEvents = {};
     this.sockets = {};
 
     this.timeouts = {};

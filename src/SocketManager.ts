@@ -1,5 +1,5 @@
 import type { Reducer, SocketActions } from './types';
-import { actionCreatorFactory, Success, ActionCreatorFactory } from 'typescript-fsa';
+import { actionCreatorFactory, ActionCreatorFactory } from 'typescript-fsa';
 import produce, { Draft } from 'immer';
 
 type ConstructorProps<State> = {
@@ -23,12 +23,12 @@ export default class SocketManager<State> {
   }
 
   createSocketListener<Result>(type: string, onReceive: (state: Draft<State>, result: Result) => void) {
-    const action = this.actionCreator<Success<unknown, Result>>(type);
+    const action = this.actionCreator<Result>(type);
     this.socketEvents[type] = action;
 
-    this.reducer.case(action, (state, { result }) =>
+    this.reducer.case(action, (state, result) =>
       produce(state, (draft) => {
-        onReceive(draft, result as Result);
+        onReceive(draft, result);
       }),
     );
   }
