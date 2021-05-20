@@ -10,7 +10,7 @@ export type ExtendedState<State> = State & {
 export type API<Payload, Result, State> = {
   path: string;
   method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
-  successReducer: (state: Draft<State>, result: Result, payload: Payload) => void;
+  successReducer?: (state: Draft<State>, result: Result, payload: Payload) => void;
   failReducer?: (state: Draft<State>, error: Error, payload: Payload) => void;
   startReducer?: (state: Draft<State>, payload: Payload) => void;
 };

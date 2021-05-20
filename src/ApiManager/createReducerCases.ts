@@ -34,7 +34,7 @@ const createReducerCases = <Payload, Result, State>({
     produce(state, (draft) => {
       draft.lastAction = actionName;
       draft._loading[actionName] = false;
-      api.successReducer(draft, result as Result, params as Payload);
+      if (api.successReducer) api.successReducer(draft, result as Result, params as Payload);
     }),
   );
 };
