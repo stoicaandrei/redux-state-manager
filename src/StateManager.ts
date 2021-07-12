@@ -10,7 +10,7 @@ import SocketListener from './SocketListener';
 import createSocketMiddleware from './createSocketMiddleware';
 import { getDispatchHook, getSelectorHook } from './hooks';
 
-import type { Reducer, Selectors, TokenSelector } from './types';
+import type { RecursivePartial, Reducer, Selectors, TokenSelector } from './types';
 import type { StoreEnhancer } from 'redux';
 
 type Props<State> = {
@@ -18,7 +18,7 @@ type Props<State> = {
   socketUrl?: string;
   permanentParamsSelectors?: Selectors<State>;
   tokenSelector?: TokenSelector<State>;
-  initialState?: State;
+  initialState?: RecursivePartial<State>;
 };
 
 export default class StateManager<State> {
@@ -28,7 +28,7 @@ export default class StateManager<State> {
 
   constructor(props: Props<State>) {
     props.initialState = props.initialState || ({} as State);
-    this.reducer = reducerWithInitialState({ ...props.initialState, _loading: {}, lastAction: '' });
+    this.reducer = reducerWithInitialState({ ...(props.initialState as State), _loading: {}, lastAction: '' });
 
     this.apiManager = new ApiManager({
       apiUrl: props.apiUrl || '',

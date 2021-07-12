@@ -52,3 +52,7 @@ export type SocketActions = {
 };
 
 export type StateSelector<T, State> = (state: ExtendedState<State>) => T;
+
+export type RecursivePartial<T> = {
+  [P in keyof T]?: RecursivePartial<T[P]>;
+};
