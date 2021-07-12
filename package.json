@@ -1,7 +1,7 @@
 {
   "name": "redux-state-manager",
   "description": "Easy, typescript friendly, redux store management for APIs, sockets and local events",
-  "version": "2.2.6",
+  "version": "2.3.0",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "repository": "git@github.com:stoicaandrei/redux-state-manager.git",
