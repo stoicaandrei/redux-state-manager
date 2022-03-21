@@ -16,8 +16,8 @@ Redux-Saga is a powerful library for managing asynchronous calls inside react, b
 - Clean [state manipulation][create-json-requests] using javascript immutable objects
 - Strong typed [selectors][selectors] for accessing the state
 
-[docs]: https://stoica.dev/redux-state-manager/#
-[api-type]: https://stoica.dev/redux-state-manager/#/apimanager#api-type
-[create-json-requests]: https://stoica.dev/redux-state-manager/#/apimanager#create-json-requests
-[socketmanager]: https://stoica.dev/redux-state-manager/#/socketmanager
-[selectors]: https://stoica.dev/redux-state-manager/#/selectors
+[docs]: https://github.stoica.dev/redux-state-manager/#
+[api-type]: https://github.stoica.dev/redux-state-manager/#/apimanager#api-type
+[create-json-requests]: https://github.stoica.dev/redux-state-manager/#/apimanager#create-json-requests
+[socketmanager]: https://github.stoica.dev/redux-state-manager/#/socketmanager
+[selectors]: https://github.stoica.dev/redux-state-manager/#/selectors
